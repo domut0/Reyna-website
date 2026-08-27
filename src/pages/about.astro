@@ -1,0 +1,156 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import { coverFor } from "../lib/images";
+import { site } from "../data/site";
+import { topics } from "../data/topics";
+
+const portrait = coverFor("wrestling")!;
+const list = topics.slice().sort((a, b) => a.order - b.order);
+---
+
+<Base title="About" chrome="light" accent="#495f39">
+  <article class="page">
+    <header class="head">
+      <p class="crumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span></p>
+      <h1>About</h1>
+    </header>
+
+    <div class="body">
+      <div class="prose">
+        <!-- PLACEHOLDER COPY. No bio was supplied. Nothing here is a claim
+             about Reyna; it is scaffolding written to the right length and
+             tone so the page can be judged, and must be replaced before
+             launch. See DESIGN.md §11.3 for the tone to match. -->
+        <p class="draft-flag" role="note">
+          <strong>Draft copy.</strong> These two paragraphs are placeholder text
+          at roughly the right length. Replace them with Reyna's own words.
+        </p>
+
+        <p class="big">
+          Reyna photographs high-school sport — the part of it that happens
+          between the whistle and the scoreboard.
+        </p>
+        <p>
+          She works close to the mat and the sideline, in whatever light the
+          venue gives her: floodlights, a gym ceiling, the last twenty minutes
+          of sun before a Friday kickoff. The work runs to wrestling, football,
+          flag football, and dance &amp; cheer, and she designs the gameday
+          graphics that go with them.
+        </p>
+        <p>
+          Every gallery on this site is an edit, not a take. A single meet can
+          produce four hundred frames; what is here is the handful worth
+          keeping.
+        </p>
+
+        <h2>Subjects</h2>
+        <ul class="subjects">
+          {list.map((t) => (
+            <li style={`--tint:${t.accent}`}>
+              <a href={`/work/${t.id}/`}>
+                <strong>{t.title}</strong>
+                <span>{t.note}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <h2>Work with her</h2>
+        <p>
+          Seasons, single games, meets, senior nights, and team portraits.
+          The fastest way to start is an email —
+          <a class="ln" href={`mailto:${site.email}`}>{site.email}</a> — or
+          <a class="ln" href={site.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>.
+        </p>
+      </div>
+
+      <aside class="aside">
+        <Image
+          src={portrait.src}
+          alt=""
+          widths={[400, 800, 1200]}
+          sizes="(max-width: 991px) 100vw, 40vw"
+          loading="lazy"
+          class="shot"
+        />
+      </aside>
+    </div>
+  </article>
+
+  <Footer />
+</Base>
+
+<style>
+  .head { max-width: var(--max-content); margin: 0 auto; padding: 100px var(--gutter) 10px; }
+  .crumb {
+    font-size: var(--size-smaller); text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--color-mute); display: flex; gap: 8px; margin-bottom: 20px;
+  }
+  .crumb a:hover { border-bottom: 1px solid currentColor; }
+  h1 { font-size: var(--size-hero); font-weight: 900; color: var(--accent); }
+
+  .body {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 24px var(--gutter) 60px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .prose { max-width: var(--max-prose); }
+  .prose p { font-weight: 300; margin-bottom: 1.1em; }
+  .big { font-size: var(--size-big); font-weight: 700 !important; line-height: var(--leading-base); }
+
+  .draft-flag {
+    font-size: var(--size-smaller);
+    background: #f2f2f2;
+    padding: 14px 16px;
+    box-shadow: inset 0 2px 0 0 var(--accent);
+    margin-bottom: 2em !important;
+  }
+
+  h2 {
+    font-size: var(--size-small);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 2.4em 0 1em;
+    padding-top: 14px;
+    border-top: 2px solid var(--accent);
+  }
+
+  .subjects { list-style: none; margin: 0 0 1em; padding: 0; }
+  .subjects li + li { margin-top: 2px; }
+  .subjects a {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid #e4e4e4;
+    transition: color var(--transition-base), transform var(--transition-base);
+  }
+  .subjects a:hover, .subjects a:focus-visible {
+    color: var(--tint);
+    transform: translateX(8px);
+  }
+  .subjects strong { font-weight: 900; }
+  .subjects span { color: var(--color-mute); font-weight: 300; }
+
+  .ln { border-bottom: 1px solid currentColor; }
+  .ln:hover { color: var(--accent); }
+
+  .aside .shot { width: 100%; height: auto; }
+
+  @media (min-width: 992px) {
+    .head { padding: 140px var(--gutter-lg) 10px; }
+    .body {
+      grid-template-columns: 3fr 2fr;
+      gap: 60px;
+      padding: 30px var(--gutter-lg) 80px;
+      align-items: start;
+    }
+    .aside { position: sticky; top: 100px; }
+  }
+</style>

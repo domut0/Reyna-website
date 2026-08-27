@@ -1,0 +1,345 @@
+---
+import { Image } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Footer from "../components/Footer.astro";
+import { topics } from "../data/topics";
+import { coverFor, imagesFor } from "../lib/images";
+import { site } from "../data/site";
+
+const hero = coverFor("football")!; // sunset, team kneeling — most sky, most room for type
+const entries = topics
+  .slice()
+  .sort((a, b) => a.order - b.order)
+  .map((t) => ({
+    topic: t,
+    cover: coverFor(t.id)!,
+    count: imagesFor(t.id).length,
+  }));
+---
+
+<Base title={site.wordmark} chrome="dark" accent="#a73b34">
+  <section class="hero" aria-labelledby="hero-name">
+    <div class="cover" id="cover">
+      <Image
+        src={hero.src}
+        alt=""
+        widths={[768, 1280, 1920, 2400]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+        class="cover-img"
+      />
+      <div class="scrim"></div>
+    </div>
+
+    <div class="hero-block">
+      <h1 id="hero-name">{site.wordmark}</h1>
+      <p class="role">{site.role}</p>
+      <div class="actions">
+        <button class="label" data-open-work>See the work</button>
+        <a class="label" href="/contact/">Contact</a>
+      </div>
+    </div>
+
+    <a class="cue" href="#topics" aria-label="Skip to the subjects">
+      <span class="chev"></span>
+    </a>
+  </section>
+
+  <section class="topics" id="topics" aria-label="Work by subject">
+    <div class="intro">
+      <h2>Five subjects, shot close.</h2>
+      <p>
+        Wrestling, football, flag football, dance &amp; cheer, and the gameday
+        graphics that go with them. Every gallery here is an edit — a season can
+        run to four hundred frames; these are the ones worth keeping.
+      </p>
+    </div>
+
+    <ol class="grid">
+      {
+        entries.map(({ topic, cover, count }) => (
+          <li class="cell" style={`--tint:${topic.accent}`}>
+            <a href={`/work/${topic.id}/`}>
+              <span class="frame">
+                <Image
+                  src={cover.src}
+                  alt=""
+                  widths={[400, 800, 1200]}
+                  sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"
+                  loading="lazy"
+                  class="shot"
+                />
+                <span class="wash" />
+              </span>
+              <span class="meta">
+                <strong>{topic.title}</strong>
+                <span class="count">{count} frames</span>
+              </span>
+              <span class="note">{topic.note}</span>
+            </a>
+          </li>
+        ))
+      }
+      <li class="cell prompt">
+        <a href="/contact/">
+          <span class="frame prompt-frame">
+            <span class="prompt-copy">
+              <strong>Shooting this season?</strong>
+              <span>Tell her the sport, the date, and the venue.</span>
+              <span class="label go">Get in touch</span>
+            </span>
+          </span>
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <Footer />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-ink);
+    overflow: hidden;
+  }
+
+  /* Scroll-shrink: on desktop the full-bleed frame contracts into the column
+     width as you leave the first viewport. Driven by JS below; the transition
+     here carries it. */
+  .cover {
+    position: absolute;
+    inset: 0;
+    margin: 0 auto;
+    width: 100%;
+    transition:
+      width var(--transition-slow),
+      height var(--transition-slow);
+  }
+  .cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  /* 40% black scrim — what makes white type safe over any frame. */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: var(--scrim);
+    pointer-events: none;
+  }
+
+  .hero-block {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--color-paper);
+    padding: 0 var(--gutter);
+  }
+  h1 {
+    font-size: var(--size-hero);
+    font-weight: 900;
+    line-height: var(--leading-tight);
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0;
+  }
+  .role {
+    font-size: var(--size-big);
+    font-weight: 700;
+    margin-top: 0.35em;
+  }
+  /* Mirrors the reference's hero action row: uppercase bold labels, gap 20px.
+     Gives the first viewport a visible primary action. */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 26px;
+  }
+  .actions > * {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 2px;
+    border-bottom: 2px solid transparent;
+    transition:
+      transform var(--transition-base),
+      border-color var(--transition-base);
+  }
+  .actions > *:hover,
+  .actions > *:focus-visible {
+    transform: scale(1.06);
+    border-bottom-color: currentColor;
+  }
+
+  .cue {
+    position: absolute;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    padding: 12px;
+    color: var(--color-paper);
+  }
+  /* CSS-only chevron, as the reference does it — no icon font, no SVG. */
+  .chev {
+    display: block;
+    width: 15px;
+    height: 15px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    animation: nudge 2.4s ease-in-out infinite;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: rotate(45deg) translate(0, 0); }
+    50% { transform: rotate(45deg) translate(3px, 3px); }
+  }
+
+  /* ------------------------------------------------------------------ */
+  .topics {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 64px var(--gutter) 40px;
+  }
+  .intro { max-width: var(--max-prose); margin-bottom: 48px; }
+  .intro h2 {
+    font-size: var(--size-display);
+    font-weight: 900;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.01em;
+    padding-top: 18px;
+    border-top: 2px solid var(--accent);
+  }
+  .intro p {
+    font-weight: 300;
+    margin-top: 0.9em;
+    max-width: 58ch;
+  }
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px 15px;
+  }
+  @media (min-width: 576px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 992px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 64px 24px; }
+    .topics { padding: 120px var(--gutter-lg) 60px; }
+  }
+
+  .frame {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: #ececec;
+  }
+  .shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+  .wash {
+    position: absolute;
+    inset: 0;
+    background: var(--tint);
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+  }
+  .cell a:hover .shot,
+  .cell a:focus-visible .shot { opacity: 0.35; transform: scale(1.02); }
+  .cell a:hover .wash,
+  .cell a:focus-visible .wash { opacity: 0.5; }
+
+  .meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: var(--size-small);
+  }
+  .meta strong { font-weight: 900; }
+  .count { color: var(--color-mute); font-variant-numeric: tabular-nums; }
+  .note {
+    display: block;
+    font-size: var(--size-small);
+    font-weight: 300;
+    color: var(--color-mute);
+    margin-top: 2px;
+  }
+  /* A rule in the topic's own colour: the only decoration on the page. */
+  .cell a { display: block; border-top: 2px solid transparent; }
+  .cell a:hover, .cell a:focus-visible { border-top-color: var(--tint); }
+
+  /* Five subjects in a three-column grid leaves one empty cell. Rather than
+     leave a hole, the sixth slot carries the ask. */
+  .prompt-frame {
+    display: flex;
+    align-items: flex-end;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 24px;
+    transition: background-color var(--transition-slow);
+  }
+  .prompt a:hover .prompt-frame,
+  .prompt a:focus-visible .prompt-frame { background: var(--accent); }
+  .prompt-copy { display: flex; flex-direction: column; gap: 8px; }
+  .prompt-copy strong {
+    font-size: var(--size-big);
+    font-weight: 900;
+    line-height: var(--leading-tight);
+  }
+  .prompt-copy > span { font-weight: 300; max-width: 28ch; }
+  .go { margin-top: 12px; border-bottom: 2px solid currentColor; align-self: flex-start; }
+</style>
+
+<script>
+  // shrinkProgress = clamp(scrollY / 420, 0, 1); width lerps from 100vw to the
+  // content column, height keeps the viewport ratio. Desktop only — below
+  // 992px the frame stays full-bleed.
+  const cover = document.getElementById("cover");
+  if (cover) {
+    const DIST = 420;
+    let ticking = false;
+
+    const apply = () => {
+      ticking = false;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      if (vw < 992 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        cover.style.width = "";
+        cover.style.height = "";
+        return;
+      }
+      const p = Math.min(Math.max(window.scrollY / DIST, 0), 1);
+      const target = Math.min(vw - 60, 1500);
+      const w = vw - (vw - target) * p;
+      cover.style.width = `${w}px`;
+      cover.style.height = `${(w / vw) * vh}px`;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    };
+
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+  }
+</script>

@@ -1,0 +1,115 @@
+---
+import { site } from "../data/site";
+import { topics } from "../data/topics";
+
+const year = new Date().getFullYear();
+const list = topics.slice().sort((a, b) => a.order - b.order);
+---
+
+<footer class="foot">
+  <div class="inner">
+    <div class="lead">
+      <p class="pitch">Shooting a season, a meet, or a single game.</p>
+      <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+
+    <nav class="cols" aria-label="Footer">
+      <div>
+        <h2 class="h">Work</h2>
+        <ul>
+          {list.map((t) => (
+            <li><a href={`/work/${t.id}/`}>{t.title}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h2 class="h">Elsewhere</h2>
+        <ul>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li>
+            <a href={site.instagramUrl} target="_blank" rel="noopener noreferrer">
+              Instagram
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <p class="rule">
+    <span>{site.wordmark}</span>
+    <span>&copy; {year}</span>
+  </p>
+</footer>
+
+<style>
+  .foot {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 60px var(--gutter) 76px;
+    margin-top: 40px;
+  }
+  .inner {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .pitch {
+    font-size: var(--size-big);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    max-width: 20ch;
+  }
+  .mail {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: var(--size-small);
+    font-weight: 300;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 3px;
+    transition: opacity var(--transition-base);
+  }
+  .mail:hover { opacity: 0.6; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .h {
+    font-size: var(--size-small);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+  .cols ul { list-style: none; margin: 0; padding: 0; }
+  .cols li + li { margin-top: 6px; }
+  .cols a {
+    /* #a1a1a1 on black is 7.0:1 — safe here, unlike on white. */
+    color: var(--color-mute-dark);
+    font-weight: 300;
+    transition: color var(--transition-base);
+    display: inline-block;
+    min-height: 28px;
+  }
+  .cols a:hover { color: var(--color-paper); }
+
+  .rule {
+    max-width: var(--max-content);
+    margin: 48px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--size-smaller);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-mute-dark);
+  }
+
+  @media (min-width: 992px) {
+    .foot { padding: 90px var(--gutter-lg) 80px; }
+    .inner { grid-template-columns: 1fr 1fr; gap: 60px; }
+    .pitch { font-size: var(--size-huge); }
+  }
+</style>

@@ -29,3 +29,6 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Impeccable review captures (large PNGs, regenerate with scripts/shots.mjs)
+.impeccable/review/

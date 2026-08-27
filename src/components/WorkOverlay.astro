@@ -1,0 +1,230 @@
+---
+import { Image } from "astro:assets";
+import { topics } from "../data/topics";
+import { coverFor } from "../lib/images";
+
+const entries = topics
+  .slice()
+  .sort((a, b) => a.order - b.order)
+  .map((t) => ({ topic: t, cover: coverFor(t.id) }));
+---
+
+<nav
+  id="work-overlay"
+  class="overlay"
+  aria-hidden="true"
+  aria-label="Work"
+  style={`--panel:${entries[0].topic.accent}`}
+>
+  <button class="label closer" data-close-work aria-label="Close">Close</button>
+
+  <ul class="list">
+    {
+      entries.map(({ topic }, i) => (
+        <li class="row" data-i={i}>
+          <a
+            href={`/work/${topic.id}/`}
+            class="name"
+            data-accent={topic.accent}
+            data-i={i}
+          >
+            {topic.title}
+            <span class="note">{topic.note}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="previews" aria-hidden="true">
+    {
+      entries.map(({ topic, cover }, i) =>
+        cover ? (
+          <Image
+            class="preview"
+            data-i={i}
+            src={cover.src}
+            alt=""
+            widths={[300, 600]}
+            sizes="300px"
+            loading="lazy"
+          />
+        ) : null,
+      )
+    }
+  </div>
+</nav>
+
+<style>
+  /* Always mounted, translated off-screen. Opening is one transform. */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 9990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--header-h) var(--gutter) 60px;
+    color: var(--color-paper);
+    background: var(--panel);
+    transform: translate3d(-100vw, 0, 0);
+    transition:
+      transform var(--transition-slow),
+      background-color var(--transition-slow);
+    overflow: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
+  }
+  .overlay.is-open {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+  }
+
+  .closer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 15px 11px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    z-index: 3;
+    transition: transform var(--transition-base);
+  }
+  .closer:hover { transform: scale(1.06); }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Five items, not seventeen — so the reference's two-column zig-zag would
+     read sparse. Single column, alternating alignment, type pushed well past
+     the reference's 52px so five names fill the panel. */
+  .row + .row { margin-top: 0.1em; }
+
+  .name {
+    display: block;
+    font-size: clamp(2.25rem, 11vw, 8rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    position: relative;
+    transition:
+      font-weight var(--transition-base),
+      opacity var(--transition-base);
+    /* 0.85 keeps the unhovered names above 4.5:1 on every panel colour. */
+    opacity: 0.85;
+  }
+  .name:hover,
+  .name:focus-visible { font-weight: 900; opacity: 1; }
+
+  .note {
+    display: block;
+    font-size: var(--size-small);
+    font-weight: 300;
+    letter-spacing: 0;
+    line-height: var(--leading-base);
+    max-width: 34ch;
+    margin-top: 0.4em;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity var(--transition-base),
+      transform var(--transition-base);
+  }
+  .name:hover .note,
+  .name:focus-visible .note { opacity: 1; transform: none; }
+
+  @media (min-width: 992px) {
+    .row:nth-child(even) { text-align: right; }
+    .row:nth-child(even) .note { margin-left: auto; }
+    .name { font-size: clamp(4rem, 8.4vw, 8rem); }
+    /* Right-aligned rows must stop short of the corner preview frame,
+       otherwise a long name ("Dance & Cheer") runs straight through it. */
+    .row:nth-child(even) .name { padding-right: clamp(170px, 17vw, 300px); }
+  }
+
+  /* Hovered topic's cover rises in the corner. Desktop only — on a phone the
+     names already fill the panel and a floating frame would collide. */
+  .previews {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .preview {
+    position: absolute;
+    right: 4vw;
+    bottom: 6vh;
+    width: clamp(150px, 15vw, 260px);
+    height: auto;
+    object-fit: cover;
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity var(--transition-slow),
+      transform var(--transition-slow);
+  }
+  .preview.is-shown { opacity: 1; transform: none; }
+
+  @media (min-width: 992px) {
+    .previews { display: block; }
+    .overlay { padding-inline: var(--gutter-lg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overlay { transition: transform 0.01ms, background-color 0.01ms; }
+  }
+</style>
+
+<script>
+  const overlay = document.getElementById("work-overlay");
+  if (overlay) {
+    const names = overlay.querySelectorAll<HTMLAnchorElement>(".name");
+    const previews = overlay.querySelectorAll<HTMLImageElement>(".preview");
+    const base = overlay.style.getPropertyValue("--panel");
+
+    // Hovering a topic floods the panel with its accent and raises its cover.
+    // 150ms dwell before prefetching, so a cursor sweeping the list does not
+    // fire five navigations' worth of requests.
+    let dwell: number | undefined;
+
+    const show = (i: number, accent: string, href: string) => {
+      overlay.style.setProperty("--panel", accent);
+      previews.forEach((p) => p.classList.toggle("is-shown", p.dataset.i === String(i)));
+      window.clearTimeout(dwell);
+      dwell = window.setTimeout(() => {
+        if (document.querySelector(`link[rel="prefetch"][href="${href}"]`)) return;
+        const l = document.createElement("link");
+        l.rel = "prefetch";
+        l.href = href;
+        document.head.appendChild(l);
+      }, 150);
+    };
+
+    const clear = () => {
+      overlay.style.setProperty("--panel", base);
+      previews.forEach((p) => p.classList.remove("is-shown"));
+      window.clearTimeout(dwell);
+    };
+
+    names.forEach((a) => {
+      const i = Number(a.dataset.i);
+      const accent = a.dataset.accent!;
+      const href = a.getAttribute("href")!;
+      a.addEventListener("pointerenter", () => show(i, accent, href));
+      a.addEventListener("focus", () => show(i, accent, href));
+      a.addEventListener("pointerleave", clear);
+      a.addEventListener("blur", clear);
+    });
+  }
+</script>

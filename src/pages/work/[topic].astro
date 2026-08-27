@@ -1,0 +1,201 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import Footer from "../../components/Footer.astro";
+import { topics, type Topic } from "../../data/topics";
+import { imagesFor } from "../../lib/images";
+
+export function getStaticPaths() {
+  return topics.map((topic) => ({
+    params: { topic: topic.id },
+    props: { topic },
+  }));
+}
+
+interface Props { topic: Topic }
+const { topic } = Astro.props;
+const shots = imagesFor(topic.id);
+
+const ordered = topics.slice().sort((a, b) => a.order - b.order);
+const idx = ordered.findIndex((t) => t.id === topic.id);
+const next = ordered[(idx + 1) % ordered.length];
+
+const uniform = topic.grid === "uniform";
+---
+
+<Base
+  title={topic.title}
+  description={`${topic.title} photography — ${topic.note}.`}
+  chrome="light"
+  accent={topic.accent}
+>
+  <header class="head">
+    <p class="crumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{topic.title}</span>
+    </p>
+    <h1>{topic.title}</h1>
+    <p class="note">{topic.note}</p>
+    <p class="count">{shots.length} frames</p>
+  </header>
+
+  {
+    uniform && (
+      <p class="caveat">
+        These are gameday graphics — designed for social, so they run at a fixed
+        crop rather than the ragged grid the photography uses.
+      </p>
+    )
+  }
+
+  <section class={uniform ? "sheet uniform" : "sheet ragged"} aria-label={`${topic.title} photographs`}>
+    {
+      shots.map((shot, i) => (
+        <figure class={shot.isPortrait ? "shot tall" : "shot wide"}>
+          <Image
+            src={shot.src}
+            alt={`${topic.title} — frame ${i + 1} of ${shots.length}`}
+            widths={[400, 800, 1200, 1600]}
+            sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"
+            loading={i < 4 ? "eager" : "lazy"}
+            class="img"
+          />
+        </figure>
+      ))
+    }
+  </section>
+
+  <nav class="onward" aria-label="Next subject">
+    <a href={`/work/${next.id}/`} style={`--next:${next.accent}`}>
+      <span class="label small">Next</span>
+      <span class="big">{next.title}</span>
+    </a>
+  </nav>
+
+  <Footer />
+</Base>
+
+<style>
+  .head {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 100px var(--gutter) 24px;
+  }
+  .crumb {
+    font-size: var(--size-smaller);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-mute);
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .crumb a { border-bottom: 1px solid transparent; }
+  .crumb a:hover { border-bottom-color: currentColor; }
+
+  h1 {
+    font-size: var(--size-hero);
+    font-weight: 900;
+    line-height: var(--leading-tight);
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .note {
+    font-size: var(--size-big);
+    font-weight: 300;
+    margin-top: 0.4em;
+    max-width: 40ch;
+  }
+  .count {
+    font-size: var(--size-smaller);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-mute);
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 2px solid var(--accent);
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .caveat {
+    max-width: var(--max-prose);
+    margin: 0 auto;
+    padding: 0 var(--gutter) 8px;
+    font-size: var(--size-small);
+    font-weight: 300;
+    color: var(--color-mute);
+  }
+
+  .sheet {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 30px var(--gutter) 40px;
+  }
+
+  /* Ragged: every frame keeps its own ratio. She crops per-frame across 19
+     distinct ratios, so re-cropping to a uniform cell would throw away her
+     framing. Columns keep the page tidy; heights are free. */
+  .ragged { columns: 1; column-gap: 15px; }
+  .ragged .shot { break-inside: avoid; margin: 0 0 15px; }
+
+  /* Uniform: fixed 4:5, for the fixed-ratio designed assets only. */
+  .uniform {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .uniform .shot { margin: 0; }
+  .uniform .img { aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
+
+  .shot { position: relative; overflow: hidden; background: #ececec; }
+  .img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity var(--transition-slow);
+  }
+  .shot:hover .img { opacity: 0.82; }
+
+  @media (min-width: 576px) {
+    .ragged { columns: 2; }
+    .uniform { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 992px) {
+    .head { padding: 140px var(--gutter-lg) 30px; }
+    .sheet { padding: 40px var(--gutter-lg) 60px; }
+    .ragged { columns: 3; column-gap: 24px; }
+    .ragged .shot { margin-bottom: 24px; }
+    .uniform { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .caveat { padding-inline: var(--gutter-lg); }
+  }
+
+  .onward {
+    max-width: var(--max-content);
+    margin: 0 auto;
+    padding: 0 var(--gutter) 80px;
+  }
+  .onward a {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 2px solid var(--next);
+    padding-top: 20px;
+    transition: color var(--transition-base);
+  }
+  .onward a:hover { color: var(--next); }
+  .small {
+    font-size: var(--size-smaller);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-mute);
+    font-weight: 700;
+  }
+  .big {
+    font-size: var(--size-display);
+    font-weight: 900;
+    line-height: var(--leading-tight);
+  }
+  @media (min-width: 992px) { .onward { padding-inline: var(--gutter-lg); } }
+</style>

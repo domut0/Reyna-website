@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Satoshi — Indian Type Foundry, free via fontshare.com/fonts/satoshi
+   The reference site loads five separate families (Satoshi-Light, -Regular,
+   -Medium, -Bold, -Black). DESIGN.md §3 notes that is a legacy quirk; the
+   variable cut covers 300–900 in one 42 KB file, so we use that and drive it
+   with real font-weight.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Satoshi";
+  src:
+    url("/fonts/Satoshi-Variable.woff2") format("woff2-variations"),
+    url("/fonts/Satoshi-Variable.woff") format("woff-variations");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Monochrome content layer — DESIGN.md §4 */
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  /* Reference uses #a1a1a1 (~2.6:1 on white — fails AA). DESIGN.md §10 says
+     darken it; #767676 is 4.54:1 on white. */
+  --color-mute: #767676;
+  --color-mute-dark: #a1a1a1; /* only ever on black, where it is 7.0:1 */
+
+  /* Accent palette — DESIGN.md §4 */
+  --color-brick: #a73b34;
+  --color-ember: #be6f40;
+  --color-olive: #495f39;
+  --color-rasp: #b83b6c;
+  --color-plum: #312048;
+  --color-cobalt: #2f518b;
+  --color-dust: #c091ab;
+}
+
+:root {
+  /* Type scale — DESIGN.md §3 */
+  --size-smaller: 11px;
+  --size-small: 14px;
+  --size-medium: 16px;
+  --size-big: 22px;
+  --size-huge: 38px;
+  --size-display: 28px;
+  --size-hero: 32px;
+
+  --leading-tight: 1.1;
+  --leading-base: 1.5;
+  --leading-loose: 1.7;
+
+  /* Motion — the whole system is two durations. DESIGN.md §8 */
+  --transition-base: 0.25s ease-in-out;
+  --transition-slow: 0.4s ease-in-out;
+
+  /* Layout */
+  --gutter: 11px;
+  --gutter-lg: 30px;
+  --max-content: 1500px;
+  --max-prose: 80ch;
+  --header-h: 60px;
+  --scrim: 0.4;
+
+  --accent: var(--color-brick);
+}
+
+@media (min-width: 568px) {
+  :root { --size-display: 40px; --size-hero: 48px; }
+}
+@media (min-width: 992px) {
+  :root { --size-display: 52px; --size-hero: 72px; }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: var(--color-paper);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--size-small);
+  font-weight: 400;
+  line-height: var(--leading-base);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  overflow-x: hidden;
+}
+
+body.is-locked { overflow: hidden; }
+
+/* While the work overlay covers the viewport the page chrome underneath is
+   both redundant and collides with the overlay's own Close control, so it
+   steps out rather than stacking. */
+body.is-locked .site-header,
+body.is-locked .corner {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--leading-tight);
+  margin: 0;
+  font-weight: 700;
+}
+
+/* The reference justifies body copy, which rivers badly in a narrow column.
+   DESIGN.md §3 flags it as a mistake not to inherit. */
+p { line-height: var(--leading-base); text-align: left; margin: 0; }
+a, button, small, label { line-height: var(--leading-loose); }
+strong { font-weight: 900; }
+img, video { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Uppercase bold label — the reference's one interactive-text treatment */
+.label {
+  font-size: var(--size-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Visible focus. The reference has none; this is an addition, not an
+   inheritance. Uses the page's own accent so it never reads as browser chrome. */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -110%);
+  z-index: 100000;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 12px 20px;
+  transition: transform var(--transition-base);
+}
+.skip-link:focus-visible { transform: translate(-50%, 0); }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

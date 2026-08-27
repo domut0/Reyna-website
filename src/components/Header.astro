@@ -1,0 +1,94 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  chrome: "dark" | "light";
+}
+const { chrome } = Astro.props;
+---
+
+<header class="site-header" data-chrome={chrome}>
+  <button class="label hit" data-open-work aria-expanded="false" aria-controls="work-overlay">
+    Work
+  </button>
+  <a class="wordmark" href="/" aria-label={`${site.wordmark} — home`}>{site.wordmark}</a>
+  <a class="label hit" href="/contact/">Contact</a>
+</header>
+
+<nav class="corner" aria-label="Secondary">
+  <a class="label hit corner-left" href="/about/">About</a>
+  <a
+    class="label hit corner-right"
+    href={site.instagramUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    Instagram<span class="sr-only"> (opens in a new tab)</span>
+  </a>
+</nav>
+
+<style>
+  /* Fixed, transparent, never gains a fill. Colour flips per page rather than
+     using mix-blend-mode, so it stays predictable over any photograph. */
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 11px;
+    z-index: 10100;
+    background: transparent;
+    pointer-events: none;
+  }
+  .site-header > * { pointer-events: auto; }
+
+  .site-header[data-chrome="dark"] { color: var(--color-paper); }
+  .site-header[data-chrome="light"] { color: var(--color-ink); }
+
+  .wordmark {
+    font-weight: 900;
+    font-size: var(--size-big);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    transition: transform var(--transition-base);
+  }
+
+  .hit {
+    /* 44px touch target without inflating the visual box */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transition: transform var(--transition-base);
+    will-change: transform;
+  }
+  .hit:hover,
+  .wordmark:hover { transform: scale(1.06); }
+
+  .corner { color: inherit; }
+  .corner-left,
+  .corner-right {
+    position: fixed;
+    bottom: 0;
+    padding: 15px 11px;
+    z-index: 10100;
+    min-height: 44px;
+  }
+  .corner-left { left: 0; }
+  .corner-right { right: 0; }
+
+  @media (min-width: 650px) {
+    .site-header { padding: 15px 20px; }
+    .corner-left, .corner-right { padding: 15px 20px; }
+  }
+</style>
+
+<script>
+  // The corner links sit outside the header, so they inherit page colour from
+  // the root rather than the header element.
+  const chrome = document.documentElement.dataset.chrome;
+  document.querySelectorAll<HTMLElement>(".corner").forEach((el) => {
+    el.style.color = chrome === "dark" ? "#fff" : "#000";
+  });
+</script>
