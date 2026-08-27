@@ -143,6 +143,15 @@ const entries = topics
   .name:hover .note,
   .name:focus-visible .note { opacity: 1; transform: none; }
 
+  /* No hover on touch, so the note would never appear — and without it the
+     five names leave most of the panel empty. Show it, quieter, and let the
+     rows breathe enough to fill the screen. */
+  @media (hover: none), (max-width: 991px) {
+    .name { font-size: clamp(2.6rem, 12vw, 4rem); }
+    .name .note { opacity: 0.8; transform: none; }
+    .row + .row { margin-top: 0.5em; }
+  }
+
   @media (min-width: 992px) {
     .row:nth-child(even) { text-align: right; }
     .row:nth-child(even) .note { margin-left: auto; }

@@ -15,17 +15,25 @@ const { chrome } = Astro.props;
   <a class="label hit" href="/contact/">Contact</a>
 </header>
 
-<nav class="corner" aria-label="Secondary">
-  <a class="label hit corner-left" href="/about/">About</a>
-  <a
-    class="label hit corner-right"
-    href={site.instagramUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Instagram<span class="sr-only"> (opens in a new tab)</span>
-  </a>
-</nav>
+{
+  /* Corner links ride over the full-bleed hero only. On the light inner pages
+     they would be black text pinned over scrolling content — and invisible
+     once the black footer scrolls under them. The footer already carries
+     About and Instagram, so there is nothing to replace. */
+  chrome === "dark" && (
+    <nav class="corner" aria-label="Secondary">
+      <a class="label hit corner-left" href="/about/">About</a>
+      <a
+        class="label hit corner-right"
+        href={site.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Instagram<span class="sr-only"> (opens in a new tab)</span>
+      </a>
+    </nav>
+  )
+}
 
 <style>
   /* Fixed, transparent, never gains a fill. Colour flips per page rather than
@@ -66,7 +74,8 @@ const { chrome } = Astro.props;
   .hit:hover,
   .wordmark:hover { transform: scale(1.06); }
 
-  .corner { color: inherit; }
+  /* Only rendered on dark-chrome pages, so white is unconditional. */
+  .corner { color: var(--color-paper); }
   .corner-left,
   .corner-right {
     position: fixed;
@@ -84,11 +93,3 @@ const { chrome } = Astro.props;
   }
 </style>
 
-<script>
-  // The corner links sit outside the header, so they inherit page colour from
-  // the root rather than the header element.
-  const chrome = document.documentElement.dataset.chrome;
-  document.querySelectorAll<HTMLElement>(".corner").forEach((el) => {
-    el.style.color = chrome === "dark" ? "#fff" : "#000";
-  });
-</script>

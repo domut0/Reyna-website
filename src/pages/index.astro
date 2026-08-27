@@ -141,7 +141,7 @@ const entries = topics
     z-index: 2;
     text-align: center;
     color: var(--color-paper);
-    padding: 0 var(--gutter);
+    padding: 0 24px;
   }
   h1 {
     font-size: var(--size-hero);
@@ -151,10 +151,20 @@ const entries = topics
     color: var(--accent);
     margin: 0;
   }
+  /* Subtitle, not a second headline — it stays quieter than the wordmark at
+     every width, uppercase and tracked so the two never read as a pair. */
   .role {
-    font-size: var(--size-big);
+    font-size: var(--size-small);
     font-weight: 700;
-    margin-top: 0.35em;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: 0.9em;
+    /* global.css sets `p { text-align: left }` to kill the reference's
+       justify; the hero is the one place that needs centring back. */
+    text-align: center;
+  }
+  @media (min-width: 568px) {
+    .role { font-size: var(--size-medium); letter-spacing: 0.18em; }
   }
   /* Mirrors the reference's hero action row: uppercase bold labels, gap 20px.
      Gives the first viewport a visible primary action. */

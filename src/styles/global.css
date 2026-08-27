@@ -46,7 +46,10 @@
   --size-big: 22px;
   --size-huge: 38px;
   --size-display: 28px;
-  --size-hero: 32px;
+  /* The reference runs 32px here, but its hero carries a one-word name. Ours
+     sits above a two-line role, and at 32px the subtitle out-weighed the
+     wordmark on a phone. */
+  --size-hero: 44px;
 
   --leading-tight: 1.1;
   --leading-base: 1.5;
