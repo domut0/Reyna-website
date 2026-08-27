@@ -660,30 +660,69 @@ Tone notes for writing Reyna's:
 
 Reyna's work is organised by **subject**, not by client. The five topics:
 
-| Topic | Slug | Notes |
+| Topic | Slug | Source folder | Files supplied |
+|---|---|---|---|
+| Dance & cheer | `dance-cheer` | `dance-cheer` | 29 |
+| Graphics | `graphics` | `graphics` | 8 |
+| Flag football | `flag-football` | `flag football` | 85 |
+| Football | `football` | `football` | 58 |
+| Wrestling | `wrestling` | `wrestling` | 236 |
+
+Note the folder is `dance-cheer`, not `dance` — cheer is bundled in. Confirm whether that is
+one topic or two. The `flag football` folder has a space that must become a hyphen in the
+slug.
+
+#### Measured from the delivered files, 2026-08-25
+
+416 files, 4.1 GB, at `D:\Reyna-originals\website\`. Every file read successfully. **This
+corrects an assumption stated in an earlier draft of this section.**
+
+The earlier draft reasoned from genre that Reyna, shooting sport, would be working
+**landscape**, in contrast to the reference site's fashion-editorial portrait crops. That is
+wrong. She shoots overwhelmingly **vertical**:
+
+| Topic | Portrait | Landscape |
 |---|---|---|
-| Dance | `dance` | Stage lighting, motion blur, mostly vertical |
-| Graphics | `graphics` | **Not photography** — see the warning below |
-| Flag football | `flag-football` | Field sport, daylight, horizontal |
-| Football | `football` | Field sport, often floodlit night, horizontal |
-| Wrestling | `wrestling` | Indoor, tight, high-contrast, mixed orientation |
+| Football | 81% | 19% |
+| Wrestling | 77% | 23% |
+| Flag football | 74% | 26% |
+| Dance & cheer | 72% | 28% |
+| Graphics | 100% | 0% |
 
-This changes the genre assumption inherited from the reference site. New School Represents
-is **fashion/editorial** — mostly portrait-orientation, studio-lit, one hero image per
-project. Reyna is shooting **sport and performance** — mostly landscape, available-light,
-and high-volume (a single game produces hundreds of frames, of which maybe twenty are
-portfolio-grade). Three consequences:
+Mean aspect ratio sits at 0.81–0.89 (w/h) across every photographic topic. So the reference
+site's layout — which was built around portrait imagery — fits her work **better** than the
+earlier draft assumed, not worse. Consequences:
 
-1. **The ragged `contain` grid gets *better*, not worse.** §6.2's grid never force-crops, so
-   mixing 3:2 landscape field shots with vertical dance frames stays honest. Do not switch to
-   a uniform square grid to "tidy it up" — that would crop the action out of every frame.
-2. **The full-bleed hero wants a horizontal image.** The reference's
-   `object-position: bottom center` is tuned for standing figures in portrait crops. For a
-   landscape sports frame, `center center` will usually be right. Make it per-image, not
-   global.
-3. **Editing matters more than layout.** Twenty strong frames per topic beats two hundred.
-   This is the single highest-leverage thing on the whole project and it is Reyna's call,
-   not a design decision — see §14.
+1. **Keep `object-position: bottom center` on the hero.** The earlier draft proposed
+   switching to `center center` for landscape sports frames. Since the work is portrait and
+   figure-centred, the reference's original value is right. Still make it per-image
+   overridable (§13), but the default stands.
+2. **The ragged `contain` grid is strongly vindicated.** Aspect ratios are not merely mixed,
+   they are *scattered* — 19 distinct ratios in wrestling, 16 in football, spanning 0.56
+   (very tall, near 9:16) to 1.51 (3:2 landscape). She crops per-frame and idiosyncratically.
+   Any uniform grid would have to crop most images a second time, destroying her framing.
+   §6.2's `contain` grid is the only honest option here.
+3. **Resolution is ample for photography, and a hard problem for graphics.** All four photo
+   topics have a minimum long edge of 3038px and a typical 5472px (Canon 45MP, 2:3). Graphics
+   are the exception and are covered below.
+4. **Editing matters more than layout.** 236 wrestling frames against 8 graphics would make
+   wrestling 57% of the site. Twenty strong frames per topic beats two hundred. This is the
+   single highest-leverage decision on the whole project, and it is Reyna's — see §14.
+
+**Duplicates:** exactly 3 byte-identical pairs (one each in dance-cheer, football,
+wrestling), verified by hash. 16 further files carry a ` (1)` suffix but are distinct
+frames — Google Drive naming, not duplication. **Do not dedupe on filename**; it would
+delete 16 real images. Two further pairs share a frame number with differing content
+(`591A0997` in flag football, `591A0759` in football) — two edits of one shot, Reyna picks.
+Effective unique count: **413**.
+
+⚠️ **Graphics cannot be shown large.** All 8 are 1080×1350 or 1080×1349 — Instagram's 4:5
+export — plus two smaller outliers at 847×928 and 792×990. Every one is below the 2560px
+long edge a retina full-width display needs. They are fine as grid thumbnails and unusable
+as hero or full-bleed images. Either Reyna re-exports them from the design source at 2× or
+larger, or the graphics topic is designed to present them small and uniform. Given they are
+already a fixed 4:5, **a uniform 4:5 grid for graphics is both the correct design call and
+the one their resolution forces.**
 
 ⚠️ **"Graphics" is a different medium and should be flagged now.** The other four are
 photography; graphics are presumably designed assets — gameday posters, social cards, player
@@ -848,8 +887,12 @@ Work cannot start without:
 
 **Site-wide:**
 
-- [ ] A hero image or video, **landscape**, shot to survive a 40% black scrim with centred
-      white type over it (§4)
+- [ ] A hero image or video that survives a 40% black scrim with centred white type over it
+      (§4). Her work is ~78% portrait (§12.1), so a vertical hero is the natural choice and
+      the reference's `object-position: bottom center` suits it — but the hero crops to
+      100vw × 100vh, so check it still reads on a wide desktop viewport.
+- [ ] **Graphics re-exported at ≥2560px long edge**, if they are to appear at any size above
+      a grid thumbnail. The supplied files are 1080px Instagram exports (§12.1).
 - [ ] Bio for `/about/`, one paragraph, third person (see §11.3 for tone)
 - [ ] Contact email, Instagram handle, where she is based
 - [ ] Any teams, schools, or programmes she has shot for — the equivalent of the reference's
