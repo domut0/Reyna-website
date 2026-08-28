@@ -336,7 +336,14 @@ const entries = topics
         return;
       }
       const p = Math.min(Math.max(window.scrollY / DIST, 0), 1);
-      const target = Math.min(vw - 60, 1500);
+      // Land flush with the prose column below, the way the reference measures
+      // its bio block. `vw - 60` was a 4% move at 1440px — technically the
+      // interaction, visibly nothing.
+      const intro = document.querySelector(".intro");
+      const target = Math.min(
+        intro ? Math.round(intro.getBoundingClientRect().width) : 1000,
+        vw,
+      );
       const w = vw - (vw - target) * p;
       cover.style.width = `${w}px`;
       cover.style.height = `${(w / vw) * vh}px`;

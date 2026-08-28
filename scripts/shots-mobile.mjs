@@ -51,11 +51,15 @@ for (const [path, file] of ROUTES) {
   });
   await page.waitForTimeout(700);
   const h = await page.evaluate(() => document.body.scrollHeight);
+  // `clip` alone is viewport-relative and silently truncates to 844px, which
+  // produces a file that looks valid and shows none of the page. fullPage
+  // must be set; clip then applies to the document.
   await page.screenshot({
     path: join(OUT, file),
-    clip: { x: 0, y: 0, width: W, height: Math.min(h, CAP) },
+    fullPage: true,
+    ...(h > CAP ? { clip: { x: 0, y: 0, width: W, height: CAP } } : {}),
   });
-  console.log(`${file}  (page ${h}px)`);
+  console.log(`${file}  (page ${h}px, captured ${Math.min(h, CAP)}px)`);
 }
 
 // The overlay only exists in an opened state.

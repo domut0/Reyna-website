@@ -17,9 +17,18 @@ This document merges two passes:
   directly: live DOM, computed styles, the shipped JS bundles, and the full sitemap, at
   both mobile and desktop viewports.
 
-Everything in §2–§10 is measured first-hand. Where a number appears (`420px`, `0.4`,
-`scale(0.7)`), it is the actual value from the reference implementation, not an estimate.
-§11 onward is design strategy for Reyna's site — proposals, marked as such.
+A third pass (2026-08-27) built the site and rewrote everything after §11 from the shipped
+artifact.
+
+The document now has three parts, and they carry different authority:
+
+| Sections | What they are |
+|---|---|
+| **§1–§11** | The **reference site**, measured first-hand. Where a number appears (`420px`, `0.4`, `scale(0.7)`) it is the actual value from that implementation. |
+| **§12** | The **built site**, recorded from the shipped code. Departures from the reference are stated with their reason. This is the authority for the current build. |
+| **§13–§15** | Outstanding content, open questions, and copy-paste tokens. |
+
+Where §12 and §1–§11 disagree, §12 wins: it describes what exists.
 
 The first pass's `[TO CONFIRM]` list (typefaces, colour, grid, hover, scroll animation,
 cursor, menus, mobile layout, stack) is now closed. Two of its `[VERIFIED]` structural
@@ -623,256 +632,207 @@ Tone notes for writing Reyna's:
 
 ---
 
-## 12. Adapting this for Reyna — one photographer, not an agency **[PROPOSED]**
+## 12. The built site
 
-### What to keep as-is
+**Sections 2–11 describe the reference site.** Everything from here describes what
+actually shipped, recorded from the built artifact rather than from intentions. Where the
+build departs from the reference, the departure is stated with its reason.
 
-- The **full-bleed hero + centred name + 40% scrim** opening. This is the look.
-- **Satoshi**, the 14px-everything body scale, uppercase bold labels.
-- The **two-duration motion system** (0.25s / 0.4s, `ease-in-out`, nothing else).
-- The **ragged `contain` grid** with `opacity: 0.3` hover — it respects the photos.
-- The **centre-mode carousel**, if the per-event project level is used (§12.3).
-- The **contrast-checked accent colour** logic, even with a smaller palette.
-- The **cursor-following caption** and **hover prefetch** on desktop.
-- A **work index separate from the landing page**.
+Built 2026-08-27. Astro 5 + Tailwind 4, static output, 8 routes.
 
-### What to collapse or drop
-
-- **The Artists overlay becomes the topics overlay.** The roster of 17 artists is replaced
-  by Reyna's five subjects (§12.1), in the same two-column zig-zag layout. This is the
-  cleanest possible mapping — the interaction was already "pick one of N things, each with
-  its own colour and preview media," which is exactly what a topic menu is.
-- **Split Info into About and Contact.** Reyna wants both as real pages
-  (`/about/`, `/contact/`), not one merged Info panel. This departs from the reference,
-  which has neither — see §12.2 for how to do it without losing the overlay feel.
-- **Consider dropping the preloader.** ~1.6s before first paint is an agency flex; for a
-  working photographer's site it is friction. If you keep it, gate it behind a
-  `sessionStorage` flag so it only fires once per session.
-- **The homepage-as-a-single-video** is a strong move but expensive to author and it costs
-  every scrap of SEO text. Safer: hero image/video + the name + a scroll cue, and let the
-  artist-landing layout *be* the homepage. Merge `/` and `/artists/[slug]/` into one route.
-- **Playground/Spotlight** — drop unless she has a services offering to sell.
-- **No blog, no news feed.** Nothing that will sit stale.
-
----
-
-### 12.1 The five topics
-
-Reyna's work is organised by **subject**, not by client. The five topics:
-
-| Topic | Slug | Source folder | Files supplied |
-|---|---|---|---|
-| Dance & cheer | `dance-cheer` | `dance-cheer` | 29 |
-| Graphics | `graphics` | `graphics` | 8 |
-| Flag football | `flag-football` | `flag football` | 85 |
-| Football | `football` | `football` | 58 |
-| Wrestling | `wrestling` | `wrestling` | 236 |
-
-Note the folder is `dance-cheer`, not `dance` — cheer is bundled in. Confirm whether that is
-one topic or two. The `flag football` folder has a space that must become a hyphen in the
-slug.
-
-#### Measured from the delivered files, 2026-08-25
-
-416 files, 4.1 GB, at `D:\Reyna-originals\website\`. Every file read successfully. **This
-corrects an assumption stated in an earlier draft of this section.**
-
-The earlier draft reasoned from genre that Reyna, shooting sport, would be working
-**landscape**, in contrast to the reference site's fashion-editorial portrait crops. That is
-wrong. She shoots overwhelmingly **vertical**:
-
-| Topic | Portrait | Landscape |
-|---|---|---|
-| Football | 81% | 19% |
-| Wrestling | 77% | 23% |
-| Flag football | 74% | 26% |
-| Dance & cheer | 72% | 28% |
-| Graphics | 100% | 0% |
-
-Mean aspect ratio sits at 0.81–0.89 (w/h) across every photographic topic. So the reference
-site's layout — which was built around portrait imagery — fits her work **better** than the
-earlier draft assumed, not worse. Consequences:
-
-1. **Keep `object-position: bottom center` on the hero.** The earlier draft proposed
-   switching to `center center` for landscape sports frames. Since the work is portrait and
-   figure-centred, the reference's original value is right. Still make it per-image
-   overridable (§13), but the default stands.
-2. **The ragged `contain` grid is strongly vindicated.** Aspect ratios are not merely mixed,
-   they are *scattered* — 19 distinct ratios in wrestling, 16 in football, spanning 0.56
-   (very tall, near 9:16) to 1.51 (3:2 landscape). She crops per-frame and idiosyncratically.
-   Any uniform grid would have to crop most images a second time, destroying her framing.
-   §6.2's `contain` grid is the only honest option here.
-3. **Resolution is ample for photography, and a hard problem for graphics.** All four photo
-   topics have a minimum long edge of 3038px and a typical 5472px (Canon 45MP, 2:3). Graphics
-   are the exception and are covered below.
-4. **Editing matters more than layout.** 236 wrestling frames against 8 graphics would make
-   wrestling 57% of the site. Twenty strong frames per topic beats two hundred. This is the
-   single highest-leverage decision on the whole project, and it is Reyna's — see §14.
-
-**Duplicates:** exactly 3 byte-identical pairs (one each in dance-cheer, football,
-wrestling), verified by hash. 16 further files carry a ` (1)` suffix but are distinct
-frames — Google Drive naming, not duplication. **Do not dedupe on filename**; it would
-delete 16 real images. Two further pairs share a frame number with differing content
-(`591A0997` in flag football, `591A0759` in football) — two edits of one shot, Reyna picks.
-Effective unique count: **413**.
-
-⚠️ **Graphics cannot be shown large.** All 8 are 1080×1350 or 1080×1349 — Instagram's 4:5
-export — plus two smaller outliers at 847×928 and 792×990. Every one is below the 2560px
-long edge a retina full-width display needs. They are fine as grid thumbnails and unusable
-as hero or full-bleed images. Either Reyna re-exports them from the design source at 2× or
-larger, or the graphics topic is designed to present them small and uniform. Given they are
-already a fixed 4:5, **a uniform 4:5 grid for graphics is both the correct design call and
-the one their resolution forces.**
-
-⚠️ **"Graphics" is a different medium and should be flagged now.** The other four are
-photography; graphics are presumably designed assets — gameday posters, social cards, player
-features. They differ in that they are usually **fixed-ratio** (1:1 or 4:5 for social),
-**contain type**, and are **artefacts rather than moments**. Two options:
-
-- **Keep it as a sixth peer topic** (simplest, and it is how Reyna described it), but give
-  the graphics grid a uniform aspect ratio rather than the ragged photo grid — designed
-  assets look sloppy when ragged, the opposite of photographs.
-- **Split it off** into its own section outside the photography topics, if she wants the
-  photo work read as a single body.
-
-Worth asking her directly. It is question 1 in §15.
-
-**Assign one accent colour per topic.** The reference already has the machinery: an overlay
-whose background is set per-hovered-item (§7), plus a 7-colour palette (§4). With five
-topics that maps one-to-one, and it turns the accent from decoration into wayfinding —
-hovering "Wrestling" in the menu paints the panel its colour, and that colour then carries
-through the wrestling gallery. Suggested assignment, using the reference's palette:
+### 12.1 Routes
 
 ```
-dance          #b83b6c   raspberry
-graphics       #be6f40   burnt orange
-flag-football  #495f39   olive
-football       #2f518b   cobalt
-wrestling      #a73b34   brick red
+/                      hero + intro + the five subjects        (chrome: dark)
+/work/wrestling/       gallery                                 (chrome: light)
+/work/football/
+/work/flag-football/
+/work/dance-cheer/
+/work/graphics/
+/about/                                                        (chrome: light)
+/contact/                                                      (chrome: light)
 ```
 
-Keep the §4 contrast check on top of this: if a topic colour fails against its own hero
-image, fall back to the highest-contrast palette member rather than shipping unreadable
-type.
+There is **no per-event level** and no project carousel: the user chose one gallery per
+topic, and the delivered filenames carry no event metadata to group by. The reference's
+flattened `/portfolio/overview/` has no equivalent — with five topics the home page is
+already the index.
 
-One honest caveat: the zig-zag two-column list in §7 was designed for **17** names and looks
-generous at that length. **Five** items at 52px in two columns will look sparse. Either bump
-the display size well past 52px so five names fill the panel, or drop to a single centred
-column. Worth mocking both before committing.
+`chrome` is a per-route prop on the layout. `dark` means white header text over full-bleed
+media; `light` means black on white. It is a prop, not `mix-blend-mode`, exactly as the
+reference does it.
 
-### 12.2 About and Contact as real pages
+### 12.2 The five subjects
 
-Reyna wants both, which the reference site has neither of — it hides all of it in one Info
-overlay. Her call, and it is a defensible one: a photographer working with schools and
-programmes gets found by people who expect a Contact page to exist, and "About" carries SEO
-text that an overlay never will.
+| Topic | Slug | Accent | Grid | Frames |
+|---|---|---|---|---|
+| Wrestling | `wrestling` | `#a73b34` brick | ragged | 20 |
+| Football | `football` | `#2f518b` cobalt | ragged | 20 |
+| Flag Football | `flag-football` | `#495f39` olive | ragged | 18 |
+| Dance & Cheer | `dance-cheer` | `#b83b6c` raspberry | ragged | 12 |
+| Graphics | `graphics` | `#be6f40` ember | **uniform 4:5** | 8 |
 
-The thing to preserve is that **the site never feels like it has a navbar**. So:
+Defined in `src/data/topics.ts`. The accent is not decoration — it is wayfinding. Hovering
+a topic in the overlay floods the panel with its colour, and that colour carries into the
+gallery heading, the count rule, the next-topic rule, and the page's focus rings.
 
-- Keep the header at three items — but they become `WORK` · logo · `INFO`, where `INFO`
-  opens a short overlay containing links to `/about/` and `/contact/` plus the Instagram and
-  email. The overlay stays the *gesture*; the pages hold the content.
-- Or, if that indirection feels fussy: put `ABOUT` bottom-left and `CONTACT` bottom-right in
-  the corner-button slots the reference uses for `SUBSCRIBE` / `SPOTLIGHT` (§7). Same fixed
-  positioning, same `scale(1.06)` hover, zero new chrome. **This is the simpler option and
-  probably the right one** — it gives both pages a permanent, visible entry point without
-  adding a nav bar.
+The reference cycles its palette round-robin and picks the artist-name colour by WCAG
+contrast at runtime. **The build does neither**, and the change is deliberate: with one
+photographer and five fixed subjects, a colour that changes on reload is noise, while a
+colour bound to a subject is navigation. The contrast reasoning is preserved as a
+constraint on the palette rather than a runtime computation — every accent is checked
+against the 40% scrim and against white.
 
-Both pages inherit the light-page treatment from §6.4 (white background, black header text),
-with prose at `max-width: 80ch`, `Satoshi-Light` 300.
+`grid` is the one field that diverges per topic. `ragged` preserves each frame's own
+aspect ratio; `uniform` crops to 4:5. See 12.4.
 
-**Contact page contents:** a single `mailto:`, Instagram, the topics she shoots, and where
-she is based. **No contact form** — it is one more thing to maintain and spam-filter, and it
-adds a backend to an otherwise static site. If she wants a form later, use a static-form
-service rather than building one.
+### 12.3 Type
 
-### 12.3 Route map
+One face: **Satoshi**, self-hosted as the **variable** cut (`/fonts/Satoshi-Variable.woff2`,
+42 KB, `font-weight: 300 900`). The reference loads five separate families
+(`Satoshi-Light` … `Satoshi-Black`) and addresses them by family name; §3 records that as a
+legacy quirk, and the build uses real `font-weight` against one variable file instead.
+
+Scale is the reference's, with one change:
 
 ```
-/                             hero + short intro + the five topics
-/work/{topic}/                gallery for one topic
-/work/{topic}/{project}/      optional: one game, meet, or shoot — carousel (§6.4)
-/about/
-/contact/
-/privacy/
+--size-smaller  11px      --size-display  28 / 40 / 52px
+--size-small    14px      --size-hero     44 / 48 / 72px
+--size-medium   16px
+--size-big      22px      --leading-tight 1.1
+--size-huge     38px      --leading-base  1.5
+                          --leading-loose 1.7
 ```
 
-Topic slugs are the five in §12.1. Whether the third level exists depends on how Reyna
-thinks about her work — as five continuous bodies of images, or as a series of discrete
-events. Question 2 in §15.
+**`--size-hero` starts at 44px, not the reference's 32px.** The reference's hero carries a
+one-word name; this one sits above a two-line role, and at 32px the subtitle out-weighed
+the wordmark on a phone. The role is correspondingly demoted to 14px uppercase at 0.14em
+tracking so the two never read as a pair.
 
-Note this **drops the reference's flattened `/portfolio/overview/`**. With five topics that
-already act as the index, a further "everything at once" page has no job. If she wants one,
-it is `/work/` showing all topics' covers.
+Two global rules depart from the reference on purpose:
 
-One readable slug per project, canonical, linked internally — do not repeat the reference's
-numeric/readable duplication (§11.1).
+- `p { text-align: left }` — the reference justifies body copy, which rivers badly in a
+  narrow column (§3). The hero role re-centres itself explicitly, since it is the one place
+  that needs it back.
+- `strong { font-weight: 900 }` — the Black cut, matching the reference's `Satoshi-Black`.
 
-Two overlays: **WORK** (the five topics, slides from left) and **INFO** (slides from right).
+### 12.4 The two grids
 
----
+**Ragged** (`columns: 1 / 2 / 3`, gap 15px → 24px) is the photography grid. Frames keep
+their own height; nothing is re-cropped. This is not a preference — §12.1 measured 19
+distinct aspect ratios in wrestling alone, spanning 0.56 to 1.51, because she crops
+per-frame. Any uniform cell would crop her framing a second time.
 
-## 13. Stack recommendation **[PROPOSED]**
+Note the reading-order consequence: CSS columns fill top-to-bottom per column, so the
+curated order (strongest first) runs down column one, not across the top row. Acceptable
+for a gallery, which is browsed rather than read.
 
-**Astro + Tailwind, images in the repo, deployed on Netlify or Vercel.**
+**Uniform** (`grid`, `aspect-ratio: 4/5`, `object-fit: cover`) is used by `graphics` only.
+Designed assets look sloppy ragged, which is the opposite of how photographs behave — and
+their fixed 1080×1350 Instagram exports force it anyway. The gallery page states this to the
+visitor in a line above the grid rather than leaving it unexplained.
 
-Ships zero JS by default (a portfolio is almost entirely static), has an excellent built-in
-image pipeline (AVIF/WebP/srcset generated at build), and content can live in Markdown files,
-so there is no CMS to maintain or pay for.
+### 12.5 Chrome
 
-Note that the reference does need real client JS for the scroll-shrink hero, the cursor
-tooltip, and the carousels. Under Astro these are three small island components — everything
-else stays static.
+Fixed 60px transparent header, never gains a fill: `WORK` (opens the overlay) · `REYNA` ·
+`CONTACT`. Contact is in the header at every width, satisfying the product principle that
+contact is never more than one action away.
 
-Two content collections — topics, and the projects inside them.
+`ABOUT` bottom-left and `INSTAGRAM` bottom-right, in the fixed corner slots the reference
+uses for `SUBSCRIBE` / `SPOTLIGHT` — **but only on the dark-chrome home page**. On the light
+inner pages they were black text pinned over scrolling content, and went invisible against
+the black footer. The footer already carries both links, so nothing was lost.
 
-`src/content/topics/wrestling.md`:
+### 12.6 The work overlay — the signature interaction
 
-```yaml
----
-title: "Wrestling"
-slug: "wrestling"
-accent: "#a73b34"                   # §12.1 — carries into the overlay and gallery
-cover: "./images/hero.jpg"
-coverPosition: "center center"      # per-image; landscape sport needs this (§12.1)
-navMedia: "./images/nav-preview.jpg"  # shown in the overlay corner on hover (§7)
-blurb: ""                           # one or two lines, shown above the gallery
-order: 1
-uniformGrid: false                  # true only for `graphics` (§12.1)
----
+One overlay, not the reference's three. `position: fixed`, 100vw × 100dvh,
+`translate3d(-100vw,0,0)` closed → `translate3d(0,0,0)` open over `--transition-slow`.
+
+Five names in a single column, alternating `text-align` left/right at ≥992px — the
+reference's two-column zig-zag re-read for five items instead of seventeen, with the type
+pushed to `clamp(4rem, 8.4vw, 8rem)` so five names fill the panel where 52px left it sparse.
+
+On hover or focus: the panel background becomes that topic's accent, the name goes from
+weight 400 to 900, its note fades in, and the topic's cover frame rises in the bottom-right
+corner. After a **150ms dwell** the route is prefetched — the reference's trick, kept.
+
+Departures, each forced by a real failure found in review:
+
+- Right-aligned rows reserve `clamp(170px, 17vw, 300px)` of right padding, or a long name
+  ("Dance & Cheer") runs straight through the corner frame.
+- Unhovered names sit at `opacity: 0.85`, which holds above 4.5:1 on every panel colour.
+- Below 992px and on any `hover: none` pointer, the notes are **always visible** — there is
+  no hover on touch, so they would otherwise never appear, and without them five names
+  leave most of the panel empty.
+- Page chrome hides while the overlay is open (`body.is-locked`); the header's Contact link
+  otherwise sat underneath the overlay's own Close control.
+- The overlay traps focus and closes on Escape. The reference does neither.
+
+### 12.7 The hero shrink
+
+Desktop only, ≥992px:
+
+```js
+progress = clamp(scrollY / 420, 0, 1)
+target   = width of the .intro column   // measured live, ~765px at 1440
+width    = vw - (vw - target) * progress
+height   = width / vw * vh              // preserves the viewport ratio
 ```
 
-`src/content/projects/2026-state-finals.md` — only if the third level is used:
+At 1440px the frame runs 1440 → 765 across the first 420px of scroll, landing flush with
+the prose column beneath it. An earlier build capped `target` at `vw - 60`, which was a 4%
+move — technically the interaction, visibly nothing. Below 992px, and under
+`prefers-reduced-motion`, it is disabled and the frame stays full-bleed.
 
-```yaml
+The 40% black scrim (`inset: 0; background: #000; opacity: 0.4`) sits over every hero. It is
+what makes white type safe over any frame, and it is not optional.
+
+### 12.8 Motion
+
+Two durations, as the reference: `--transition-base: 0.25s ease-in-out` and
+`--transition-slow: 0.4s ease-in-out`. Nothing else, no springs, no custom beziers.
+
+A global `prefers-reduced-motion: reduce` block collapses every animation and transition to
+0.01ms and disables smooth scrolling. **The reference has no reduced-motion handling at
+all** (§10); this is an addition.
+
+### 12.9 Accessibility
+
+Fixed here rather than inherited:
+
+- Body grey is `#767676` (4.54:1 on white), not the reference's `#a1a1a1` (~2.6:1). The
+  lighter grey survives only on black, where it is 7.0:1, and is scoped to the footer.
+- Visible `:focus-visible` rings in `currentColor` at 2px / 4px offset.
+- Skip link to `#main`.
+- Overlay: focus trap, Escape to close, `aria-expanded` on the triggers, `aria-hidden` when
+  closed.
+- 44px minimum touch targets on every header, corner, and overlay control.
+- Decorative images carry `alt=""`; gallery frames are numbered in their alt text.
+
+### 12.10 Images
+
+78 frames selected by eye from the 413 unique originals, via numbered contact sheets.
+`scripts/ingest.mjs` maps the chosen sheet IDs to source paths and writes 2400px long-edge
+mozjpeg masters into `src/assets/work/<topic>/`; Astro emits 340 responsive AVIF/WebP
+variants at build. Repo cost is 31 MB of masters against 4.1 GB of originals, which stay at
+`D:\Reyna-originals` and are gitignored.
+
+Hero: `object-position: center 30%`, `loading="eager"`, `fetchpriority="high"`.
+Grids: first four eager, the rest lazy, `sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"`.
+
+### 12.11 Known gaps
+
+- **Bio copy is placeholder** and flagged as draft on the page itself. `src/data/site.ts`
+  holds the five unsupplied values: surname, email, Instagram handle, region, domain.
+  `hasPlaceholders` drives the on-page warnings, so they disappear on their own once real
+  values land.
+- No favicon, no OG image, no `robots.txt`, no sitemap.
+- `astro.config.mjs` still points `site` at a placeholder domain; set it before deploying or
+  canonical URLs will be wrong.
+
 ---
-title: "State Finals"
-slug: "2026-state-finals"
-subtitle: "February 2026"           # the secondary line under the grid title
-topic: "wrestling"
-date: 2026-02-14
-cover: "./images/01.jpg"
-order: 1                            # manual ordering; she will want control
-images:
-  - src: "./images/01.jpg"
-    alt: ""
----
-```
 
-Credits are dropped from the fashion model — sport has no styling/hair/makeup chain. If a
-frame needs attribution it is the athlete, team, or event, which belongs in `alt` and the
-caption, not a credits block.
-
-If Reyna wants to update the site herself without touching Git, add Sveltia CMS or Decap CMS
-on top of the same Markdown files rather than moving to a hosted CMS.
-
-**Alternative:** if she would rather not have a developer involved long-term, a well-chosen
-Squarespace or Cargo template gets 80% of this. Worth saying honestly before building
-something custom that only one person can maintain.
-
----
-
-## 14. Content to collect from Reyna
+## 13. Content to collect from Reyna
 
 Work cannot start without:
 
@@ -905,25 +865,38 @@ Work cannot start without:
 
 ---
 
-## 15. Open questions
+## 14. Open questions
 
-1. **Is "graphics" a peer topic or its own section?** It is a different medium from the other
-   four and probably wants a uniform-ratio grid rather than the ragged photo one (§12.1).
-2. **Do topics break into individual events, or read as one continuous body?** This decides
-   whether `/work/{topic}/{project}/` exists at all (§12.3).
-3. **Where do About and Contact live in the chrome** — behind the INFO overlay, or as the two
-   corner buttons? (§12.2 recommends the corners.)
-4. Five names in the zig-zag overlay will look sparse at the reference's 52px. Bigger type,
-   or a single centred column? (§12.1)
-5. Motion/video work to accommodate? That changes the grid and adds player decisions.
-6. Should the landing page open on the hero, or go straight to the five topics?
-7. Keep the reference's dark-hero / light-body split, or commit to one? (Do not offer a toggle.)
-8. Does she need to edit it herself?
-9. Keep the preloader moment, or drop it for speed?
+### Settled by the build
+
+| Question | Answer |
+|---|---|
+| Graphics: peer topic or its own section? | Peer topic, uniform 4:5 grid (user's choice) |
+| Do topics break into events? | No — one gallery per topic (user's choice) |
+| Where do About and Contact live? | Real pages. Contact in the header at all widths; About in a corner slot on the home page only |
+| Five names sparse in the overlay? | Solved with much larger type, `clamp(4rem, 8.4vw, 8rem)` |
+| Landing page: hero or straight to topics? | Hero, with the subjects immediately beneath |
+| Dark hero / light body, or commit to one? | Kept the split; it is a per-route `chrome` prop |
+| Preloader? | Dropped. ~1.6s before first paint is an agency flex, not a working photographer's |
+
+### Still open
+
+1. **Is "Dance & Cheer" one subject or two?** The delivered folder combines them and the
+   build follows that. Splitting is a data change in `src/data/topics.ts` plus a re-ingest.
+2. **Motion/video work?** None was supplied. The grid and the ingest script assume stills;
+   video would need a poster-frame path and a player decision.
+3. **Does she need to edit it herself?** If yes, add Sveltia or Decap CMS over the existing
+   Markdown/TypeScript rather than moving to a hosted CMS.
+4. **Should the wrestling edit be re-cut?** 20 of 235 were selected here. It is the topic
+   with the most frames and the lowest hit rate, and it is her call which twenty represent
+   her.
+5. **Does the ragged grid's column reading order matter to her?** CSS columns fill
+   top-to-bottom per column, so the curated order runs down column one rather than across
+   the top row (§12.4).
 
 ---
 
-## 16. Copy-paste starting tokens
+## 15. Copy-paste starting tokens
 
 ```css
 :root {
