@@ -41,15 +41,22 @@ const shoots = [
           <span class="addr">{site.email}</span>
         </a>
 
-        <a
-          class="primary"
-          href={site.instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span class="label small">Instagram</span>
-          <span class="addr">@{site.instagram}</span>
-        </a>
+        {site.instagramUrl ? (
+          <a
+            class="primary"
+            href={site.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="label small">Instagram</span>
+            <span class="addr">@{site.instagram}</span>
+          </a>
+        ) : (
+          <div class="primary is-pending">
+            <span class="label small">Instagram</span>
+            <span class="addr">Not set</span>
+          </div>
+        )}
 
         <h2>What she shoots</h2>
         <ul class="shoots">
@@ -120,6 +127,8 @@ const shoots = [
     transition: transform var(--transition-base), color var(--transition-base);
   }
   .primary:last-of-type { border-bottom: 2px solid var(--accent); }
+  .is-pending { color: var(--color-mute); cursor: default; }
+  .is-pending .addr { font-weight: 400; }
   .primary:hover, .primary:focus-visible { transform: translateX(10px); color: var(--accent); }
   .small {
     font-size: var(--size-smaller); text-transform: uppercase;

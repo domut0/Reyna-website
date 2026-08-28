@@ -61,8 +61,15 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
         <p>
           Seasons, single games, meets, senior nights, and team portraits.
           The fastest way to start is an email —
-          <a class="ln" href={`mailto:${site.email}`}>{site.email}</a> — or
-          <a class="ln" href={site.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>.
+          <a class="ln" href={`mailto:${site.email}`}>{site.email}</a>
+          {site.instagramUrl ? (
+            <>
+              {" "}— or{" "}
+              <a class="ln" href={site.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>.
+            </>
+          ) : (
+            "."
+          )}
         </p>
       </div>
 

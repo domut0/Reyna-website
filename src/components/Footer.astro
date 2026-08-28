@@ -27,11 +27,13 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
         <ul>
           <li><a href="/about/">About</a></li>
           <li><a href="/contact/">Contact</a></li>
-          <li>
-            <a href={site.instagramUrl} target="_blank" rel="noopener noreferrer">
-              Instagram
-            </a>
-          </li>
+          {site.instagramUrl && (
+            <li>
+              <a href={site.instagramUrl} target="_blank" rel="noopener noreferrer">
+                Instagram
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </nav>

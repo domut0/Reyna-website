@@ -16,13 +16,21 @@ export const PLACEHOLDER = {
   domain: "reyna.example.com",
 } as const;
 
+/** `instagram.com/reyna` is almost certainly a real stranger's account. While
+ *  the handle is a placeholder the link is inert, so a deployed preview never
+ *  sends traffic to someone who did not ask for it. Set the real handle and
+ *  the links turn back on by themselves. */
+export const instagramReady = PLACEHOLDER.instagram !== "reyna";
+
 export const site = {
   wordmark: "REYNA",
   name: PLACEHOLDER.surname ? `Reyna ${PLACEHOLDER.surname}` : "Reyna",
   role: "Sports & Performance Photographer",
   email: PLACEHOLDER.email,
   instagram: PLACEHOLDER.instagram,
-  instagramUrl: `https://instagram.com/${PLACEHOLDER.instagram}`,
+  instagramUrl: instagramReady
+    ? `https://instagram.com/${PLACEHOLDER.instagram}`
+    : null,
   region: PLACEHOLDER.region,
   description:
     "Sports and performance photography — wrestling, football, flag football, dance and cheer.",

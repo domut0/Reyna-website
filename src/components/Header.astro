@@ -23,14 +23,16 @@ const { chrome } = Astro.props;
   chrome === "dark" && (
     <nav class="corner" aria-label="Secondary">
       <a class="label hit corner-left" href="/about/">About</a>
-      <a
-        class="label hit corner-right"
-        href={site.instagramUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Instagram<span class="sr-only"> (opens in a new tab)</span>
-      </a>
+      {site.instagramUrl && (
+        <a
+          class="label hit corner-right"
+          href={site.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Instagram<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      )}
     </nav>
   )
 }
