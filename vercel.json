@@ -3,13 +3,9 @@
   "framework": "astro",
   "buildCommand": "astro build",
   "outputDirectory": "dist",
-
-  "//": "Astro is configured with trailingSlash:'always' and build.format:'directory'. Vercel must agree, or every route costs a redirect and canonical URLs drift from the ones in the markup.",
   "trailingSlash": true,
-
   "headers": [
     {
-      "//": "Everything under _astro/ is content-hashed by Astro, so it can be cached forever. This is the whole image payload — 340 variants — and the single biggest win available here.",
       "source": "/_astro/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
