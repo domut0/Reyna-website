@@ -878,6 +878,40 @@ shipped for each.
 | Change each cover photo | Her four picks were already in the take. `football-04`, `flag-football-08`, `wrestling-16` and `dance-cheer-02` were verified pixel-identical to the files she sent (mean absolute difference < 1/255, i.e. JPEG re-encode noise) and moved to position 1 in their topic, so the change is a reorder of `SELECTION` in `scripts/ingest.mjs` and of the files on disk — no new masters, no re-ingest. Graphics keeps its lead; no cover was supplied for it |
 | Show every photo she uploaded | Already true of the repo: every one of the 78 masters renders in its gallery. The 413-image take is not in the repo (§12.11), so widening the edit needs a re-ingest from the originals |
 
+### 12.13 Revision — the copy pass
+
+Recorded 2026-08-29, second round. Her note was "make it pink, remove unnecessary
+text, remove team portraits" for `/contact/`, and "basically make the site not look
+like AI" for everything.
+
+The second half is a copy problem, not a design one. The site's own words were run
+through an AI-tell audit: **10 em dashes across 177 words of user-facing copy (56.5 per
+1,000, against a human baseline of 3)**, three tricolons, and two patterns no regex
+catches —
+
+- **The glossed list.** Five services, each with a tidy explanatory phrase after a
+  dash ("A season — Recurring coverage across a full schedule"). The uniform
+  term-then-gloss shape is the giveaway; a coach booking a game already knows what a
+  season is. The list keeps the names and drops every gloss.
+- **The site explaining itself.** "No booking form — email reaches her directly and
+  gets a faster answer" justified a design decision to someone who never asked, and
+  the graphics gallery opened by explaining its own grid ("...they run at a fixed
+  crop rather than the ragged grid the photography uses"). Both deleted.
+
+Also cut: the duplicated instruction "Tell her the sport, the date, and the venue"
+(it ran on both the home prompt cell and `/contact/`), and the footer's pitch line,
+which said nothing the email address beneath it was not already saying — the address
+took its place at display size.
+
+After: **0 em dashes, 78 words.** 56% of the copy is gone and no page lost a
+function. The two tricolons the detector still flags are the meta description
+listing her five actual subjects and her two actual locations, which is enumeration,
+not rhetoric.
+
+`/contact/` moved from cobalt to pink, matching the wordmark and the work panel.
+**Reyna's bio was not touched** — those are her own words, and this pass had no
+business in them.
+
 ---
 
 ## 13. Content to collect from Reyna

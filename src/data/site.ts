@@ -8,5 +8,5 @@ export const site = {
   region: "Manoa, HI / San Ramon, CA",
   domain: "rjmnzphoto.com",
   description:
-    "Sports and performance photography — football, flag football, wrestling, dance & cheer, and gameday graphics. Based in Manoa, HI and San Ramon, CA.",
+    "Sports and performance photography by Reyna. Football, flag football, wrestling, dance and cheer, and gameday graphics. Manoa, HI and San Ramon, CA.",
 } as const;

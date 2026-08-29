@@ -75,6 +75,11 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
   if she wants her full name.
 - The site sits on a **black ground throughout**, her call. The per-topic subject colours
   she approved are unchanged.
+- **Copy stays short and stops explaining itself.** She asked for a site that does not
+  read as machine-written, and the fix was mostly deletion: no service list where every
+  item carries a gloss, no sentence justifying a design decision to the visitor, no
+  instruction repeated on two pages. Where a photograph or an email address can do the
+  work, no sentence is added.
 - The user supplied `newschoolrepresents.com/artists/erika-kamano` as a binding visual
   reference. Its measured design system is recorded in DESIGN.md §2–§10 and is the
   authority for this build.

@@ -9,7 +9,7 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
 <footer class="foot">
   <div class="inner">
     <div class="lead">
-      <p class="pitch">Shooting a season, a meet, or a single game.</p>
+      <p class="label kicker">Email</p>
       <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
     </div>
 
@@ -62,19 +62,18 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  .pitch {
+  .kicker { color: var(--color-mute-dark); }
+  /* The address itself is the footer's one big element. It replaced a pitch
+     line that was doing no work the email address was not already doing. */
+  .mail {
+    display: inline-block;
+    margin-top: 10px;
     font-size: var(--size-big);
     font-weight: 700;
     line-height: var(--leading-tight);
-    max-width: 20ch;
-  }
-  .mail {
-    display: inline-block;
-    margin-top: 16px;
-    font-size: var(--size-small);
-    font-weight: 300;
-    border-bottom: 1px solid currentColor;
-    padding-bottom: 3px;
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 4px;
+    word-break: break-word;
     transition: opacity var(--transition-base);
   }
   .mail:hover { opacity: 0.6; }
@@ -115,6 +114,6 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
   @media (min-width: 992px) {
     .foot { padding: 90px var(--gutter-lg) 80px; }
     .inner { grid-template-columns: 1fr 1fr; gap: 60px; }
-    .pitch { font-size: var(--size-huge); }
+    .mail { font-size: var(--size-huge); }
   }
 </style>

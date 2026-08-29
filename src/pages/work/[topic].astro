@@ -25,7 +25,7 @@ const uniform = topic.grid === "uniform";
 
 <Base
   title={topic.title}
-  description={`${topic.title} photography by Reyna — sports and performance imagery.`}
+  description={`${topic.title} photographed by Reyna.`}
   chrome="light"
   accent={topic.accent}
   tint={topic.tint}
@@ -39,15 +39,6 @@ const uniform = topic.grid === "uniform";
     <h1>{topic.title}</h1>
     <p class="count">{shots.length} frames</p>
   </header>
-
-  {
-    uniform && (
-      <p class="caveat">
-        These are gameday graphics — designed for social, so they run at a fixed
-        crop rather than the ragged grid the photography uses.
-      </p>
-    )
-  }
 
   <section class={uniform ? "sheet uniform" : "sheet ragged"} aria-label={`${topic.title} photographs`}>
     {
@@ -113,15 +104,6 @@ const uniform = topic.grid === "uniform";
     font-variant-numeric: tabular-nums;
   }
 
-  .caveat {
-    max-width: var(--max-prose);
-    margin: 0 auto;
-    padding: 0 var(--gutter) 8px;
-    font-size: var(--size-small);
-    font-weight: 300;
-    color: var(--color-mute);
-  }
-
   .sheet {
     max-width: var(--max-content);
     margin: 0 auto;
@@ -162,7 +144,6 @@ const uniform = topic.grid === "uniform";
     .ragged { columns: 3; column-gap: 24px; }
     .ragged .shot { margin-bottom: 24px; }
     .uniform { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .caveat { padding-inline: var(--gutter-lg); }
   }
 
   .onward {
