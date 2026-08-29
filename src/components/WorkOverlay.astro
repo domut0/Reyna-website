@@ -7,6 +7,10 @@ const entries = topics
   .slice()
   .sort((a, b) => a.order - b.order)
   .map((t) => ({ topic: t, cover: coverFor(t.id) }));
+
+/** The panel's resting colour. Reyna asked for pink here rather than the first
+ *  topic's accent; hovering still floods it with the topic's own hue. */
+const PANEL = "#b83b6c";
 ---
 
 <nav
@@ -14,7 +18,7 @@ const entries = topics
   class="overlay"
   aria-hidden="true"
   aria-label="Work"
-  style={`--panel:${entries[0].topic.accent}`}
+  style={`--panel:${PANEL}`}
 >
   <button class="label closer" data-close-work aria-label="Close">Close</button>
 
@@ -29,7 +33,6 @@ const entries = topics
             data-i={i}
           >
             {topic.title}
-            <span class="note">{topic.note}</span>
           </a>
         </li>
       ))
@@ -100,19 +103,21 @@ const entries = topics
     margin: 0;
     padding: 0;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1000px;
     position: relative;
     z-index: 2;
   }
 
   /* Five items, not seventeen — so the reference's two-column zig-zag would
-     read sparse. Single column, alternating alignment, type pushed well past
-     the reference's 52px so five names fill the panel. */
-  .row + .row { margin-top: 0.1em; }
+     read sparse. Single column, alternating alignment. The names ran to 8rem
+     while they carried a description line under each; Reyna asked for smaller
+     type, and with the descriptions gone the list reads as a menu rather than
+     a wall, so the rows get their spacing back instead. */
+  .row + .row { margin-top: 0.34em; }
 
   .name {
     display: block;
-    font-size: clamp(2.25rem, 11vw, 8rem);
+    font-size: clamp(1.9rem, 9vw, 2.75rem);
     font-weight: 400;
     line-height: 1.02;
     letter-spacing: -0.02em;
@@ -126,36 +131,9 @@ const entries = topics
   .name:hover,
   .name:focus-visible { font-weight: 900; opacity: 1; }
 
-  .note {
-    display: block;
-    font-size: var(--size-small);
-    font-weight: 300;
-    letter-spacing: 0;
-    line-height: var(--leading-base);
-    max-width: 34ch;
-    margin-top: 0.4em;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition:
-      opacity var(--transition-base),
-      transform var(--transition-base);
-  }
-  .name:hover .note,
-  .name:focus-visible .note { opacity: 1; transform: none; }
-
-  /* No hover on touch, so the note would never appear — and without it the
-     five names leave most of the panel empty. Show it, quieter, and let the
-     rows breathe enough to fill the screen. */
-  @media (hover: none), (max-width: 991px) {
-    .name { font-size: clamp(2.6rem, 12vw, 4rem); }
-    .name .note { opacity: 0.8; transform: none; }
-    .row + .row { margin-top: 0.5em; }
-  }
-
   @media (min-width: 992px) {
     .row:nth-child(even) { text-align: right; }
-    .row:nth-child(even) .note { margin-left: auto; }
-    .name { font-size: clamp(4rem, 8.4vw, 8rem); }
+    .name { font-size: clamp(2.5rem, 5vw, 4.5rem); }
     /* Right-aligned rows must stop short of the corner preview frame,
        otherwise a long name ("Dance & Cheer") runs straight through it. */
     .row:nth-child(even) .name { padding-right: clamp(170px, 17vw, 300px); }

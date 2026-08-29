@@ -25,9 +25,10 @@ const uniform = topic.grid === "uniform";
 
 <Base
   title={topic.title}
-  description={`${topic.title} photography — ${topic.note}.`}
+  description={`${topic.title} photography by Reyna — sports and performance imagery.`}
   chrome="light"
   accent={topic.accent}
+  tint={topic.tint}
 >
   <header class="head">
     <p class="crumb">
@@ -36,7 +37,6 @@ const uniform = topic.grid === "uniform";
       <span aria-current="page">{topic.title}</span>
     </p>
     <h1>{topic.title}</h1>
-    <p class="note">{topic.note}</p>
     <p class="count">{shots.length} frames</p>
   </header>
 
@@ -67,7 +67,7 @@ const uniform = topic.grid === "uniform";
   </section>
 
   <nav class="onward" aria-label="Next subject">
-    <a href={`/work/${next.id}/`} style={`--next:${next.accent}`}>
+    <a href={`/work/${next.id}/`} style={`--next:${next.tint}`}>
       <span class="label small">Next</span>
       <span class="big">{next.title}</span>
     </a>
@@ -98,14 +98,8 @@ const uniform = topic.grid === "uniform";
     font-size: var(--size-hero);
     font-weight: 900;
     line-height: var(--leading-tight);
-    color: var(--accent);
+    color: var(--tint);
     letter-spacing: -0.01em;
-  }
-  .note {
-    font-size: var(--size-big);
-    font-weight: 300;
-    margin-top: 0.4em;
-    max-width: 40ch;
   }
   .count {
     font-size: var(--size-smaller);
@@ -114,7 +108,7 @@ const uniform = topic.grid === "uniform";
     color: var(--color-mute);
     margin-top: 18px;
     padding-top: 14px;
-    border-top: 2px solid var(--accent);
+    border-top: 2px solid var(--tint);
     display: inline-block;
     font-variant-numeric: tabular-nums;
   }
@@ -149,7 +143,7 @@ const uniform = topic.grid === "uniform";
   .uniform .shot { margin: 0; }
   .uniform .img { aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
 
-  .shot { position: relative; overflow: hidden; background: #ececec; }
+  .shot { position: relative; overflow: hidden; background: var(--color-well); }
   .img {
     width: 100%;
     height: auto;
