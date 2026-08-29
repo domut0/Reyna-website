@@ -46,11 +46,14 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
 </footer>
 
 <style>
+  /* The footer used to be the one black block on a white page. Now that the
+     whole page is black it needs a hairline to exist at all. */
   .foot {
     background: var(--color-ink);
     color: var(--color-paper);
     padding: 60px var(--gutter) 76px;
     margin-top: 40px;
+    border-top: 1px solid var(--color-line);
   }
   .inner {
     max-width: var(--max-content);
@@ -100,7 +103,7 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
     max-width: var(--max-content);
     margin: 48px auto 0;
     padding-top: 16px;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid var(--color-line);
     display: flex;
     justify-content: space-between;
     font-size: var(--size-smaller);

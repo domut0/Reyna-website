@@ -20,13 +20,23 @@
 @theme {
   --font-sans: "Satoshi", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  /* Monochrome content layer — DESIGN.md §4 */
+  /* Monochrome content layer — DESIGN.md §4. The ground is black sitewide, so
+     `ink` and `paper` are the surface and the type, not the other way round. */
   --color-ink: #000000;
   --color-paper: #ffffff;
-  /* Reference uses #a1a1a1 (~2.6:1 on white — fails AA). DESIGN.md §10 says
-     darken it; #767676 is 4.54:1 on white. */
-  --color-mute: #767676;
-  --color-mute-dark: #a1a1a1; /* only ever on black, where it is 7.0:1 */
+  /* Secondary type on black. #767676 (the old light-ground value) is 2.9:1
+     here and fails; #a1a1a1 is 7.0:1. */
+  --color-mute: #a1a1a1;
+  --color-mute-dark: #a1a1a1;
+  /* Hairlines and empty frames, one and two steps off black. */
+  --color-line: #262626;
+  --color-well: #131313;
+
+  /* Brand pink. `pink` is ink — the wordmark, on black at 6.8:1. `pink-deep`
+     is a surface — the work panel, carrying white type at 5.4:1. A single
+     value cannot do both jobs. */
+  --color-pink: #ff4d9d;
+  --color-pink-deep: #b83b6c;
 
   /* Accent palette — DESIGN.md §4 */
   --color-brick: #a73b34;
@@ -67,7 +77,8 @@
   --header-h: 60px;
   --scrim: 0.4;
 
-  --accent: var(--color-brick);
+  --accent: var(--color-pink);
+  --tint: var(--color-pink);
 }
 
 @media (min-width: 568px) {
@@ -86,8 +97,9 @@
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-ink);
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -96,8 +108,8 @@ body {
   font-size: var(--size-small);
   font-weight: 400;
   line-height: var(--leading-base);
-  color: var(--color-ink);
-  background: var(--color-paper);
+  color: var(--color-paper);
+  background: var(--color-ink);
   overflow-x: hidden;
 }
 
@@ -160,8 +172,8 @@ button {
   top: 0;
   transform: translate(-50%, -110%);
   z-index: 100000;
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-paper);
+  color: var(--color-ink);
   padding: 12px 20px;
   transition: transform var(--transition-base);
 }

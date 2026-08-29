@@ -25,25 +25,28 @@ const OUT = join(ROOT, "src", "assets", "work");
 const LONG_EDGE = 2400;
 const DRY = process.argv.includes("--dry");
 
-/** Display order per topic. First = cover. */
+/** Display order per topic, in the topic order the site uses. First = cover.
+ *  The four covers below (F036, G013, W096, D021) are the frames Reyna picked
+ *  herself; they were already in the take, so choosing them was a reorder, not
+ *  an ingest. Graphics keeps its original lead — no cover was supplied for it. */
 const SELECTION = {
-  wrestling: [
-    "W003", "W013", "W007", "W021", "W043", "W008", "W060", "W032",
-    "W012", "W091", "W029", "W124", "W055", "W037", "W121", "W096",
-    "W018", "W068", "W160", "W174",
-  ],
   football: [
-    "F028", "F002", "F014", "F036", "F044", "F005", "F050", "F011",
+    "F036", "F028", "F002", "F014", "F044", "F005", "F050", "F011",
     "F042", "F029", "F052", "F001", "F026", "F053", "F008", "F043",
     "F020", "F030", "F055", "F004",
   ],
   "flag-football": [
-    "G023", "G042", "G051", "G043", "G052", "G021", "G020", "G013",
+    "G013", "G023", "G042", "G051", "G043", "G052", "G021", "G020",
     "G060", "G026", "G001", "G065", "G025", "G031", "G006", "G078",
     "G014", "G079",
   ],
+  wrestling: [
+    "W096", "W003", "W013", "W007", "W021", "W043", "W008", "W060",
+    "W032", "W012", "W091", "W029", "W124", "W055", "W037", "W121",
+    "W018", "W068", "W160", "W174",
+  ],
   "dance-cheer": [
-    "D013", "D021", "D020", "D003", "D024", "D014", "D004", "D023",
+    "D021", "D013", "D020", "D003", "D024", "D014", "D004", "D023",
     "D025", "D016", "D005", "D026",
   ],
   graphics: [

@@ -6,7 +6,10 @@ import { topics } from "../data/topics";
 import { coverFor, imagesFor } from "../lib/images";
 import { site } from "../data/site";
 
-const hero = coverFor("football")!; // sunset, team kneeling — most sky, most room for type
+// The hero is deliberately *not* any topic's cover: with five covers already
+// on this page, reusing one showed the same frame twice in one scroll.
+// football-02 is the sunset team-kneel — most sky, most room for type.
+const hero = imagesFor("football")[1]!;
 const entries = topics
   .slice()
   .sort((a, b) => a.order - b.order)
@@ -17,7 +20,7 @@ const entries = topics
   }));
 ---
 
-<Base title={site.wordmark} chrome="dark" accent="#a73b34">
+<Base title={site.wordmark} chrome="dark" accent="#b83b6c" tint="#ff4d9d">
   <section class="hero" aria-labelledby="hero-name">
     <div class="cover" id="cover">
       <Image
@@ -36,7 +39,7 @@ const entries = topics
       <h1 id="hero-name">{site.wordmark}</h1>
       <p class="role">{site.role}</p>
       <div class="actions">
-        <button class="label" data-open-work>See the work</button>
+        <a class="label" href="/about/">About</a>
         <a class="label" href="/contact/">Contact</a>
       </div>
     </div>
@@ -47,19 +50,10 @@ const entries = topics
   </section>
 
   <section class="topics" id="topics" aria-label="Work by subject">
-    <div class="intro">
-      <h2>Five subjects, shot close.</h2>
-      <p>
-        Wrestling, football, flag football, dance &amp; cheer, and the gameday
-        graphics that go with them. Every gallery here is an edit — a season can
-        run to four hundred frames; these are the ones worth keeping.
-      </p>
-    </div>
-
     <ol class="grid">
       {
         entries.map(({ topic, cover, count }) => (
-          <li class="cell" style={`--tint:${topic.accent}`}>
+          <li class="cell" style={`--wash:${topic.accent};--rule:${topic.tint}`}>
             <a href={`/work/${topic.id}/`}>
               <span class="frame">
                 <Image
@@ -76,7 +70,6 @@ const entries = topics
                 <strong>{topic.title}</strong>
                 <span class="count">{count} frames</span>
               </span>
-              <span class="note">{topic.note}</span>
             </a>
           </li>
         ))
@@ -148,7 +141,7 @@ const entries = topics
     font-weight: 900;
     line-height: var(--leading-tight);
     letter-spacing: 0.02em;
-    color: var(--accent);
+    color: var(--color-pink);
     margin: 0;
   }
   /* Subtitle, not a second headline — it stays quieter than the wordmark at
@@ -221,19 +214,13 @@ const entries = topics
     margin: 0 auto;
     padding: 64px var(--gutter) 40px;
   }
-  .intro { max-width: var(--max-prose); margin-bottom: 48px; }
-  .intro h2 {
-    font-size: var(--size-display);
-    font-weight: 900;
-    line-height: var(--leading-tight);
-    letter-spacing: -0.01em;
-    padding-top: 18px;
-    border-top: 2px solid var(--accent);
-  }
-  .intro p {
-    font-weight: 300;
-    margin-top: 0.9em;
-    max-width: 58ch;
+  /* No intro copy above the grid any more, so the section opens on a rule in
+     the brand pink rather than on a heading. */
+  .topics::before {
+    content: "";
+    display: block;
+    border-top: 2px solid var(--color-pink);
+    margin-bottom: 48px;
   }
   .grid {
     list-style: none;
@@ -254,7 +241,7 @@ const entries = topics
     position: relative;
     overflow: hidden;
     aspect-ratio: 4 / 5;
-    background: #ececec;
+    background: var(--color-well);
   }
   .shot {
     width: 100%;
@@ -265,7 +252,7 @@ const entries = topics
   .wash {
     position: absolute;
     inset: 0;
-    background: var(--tint);
+    background: var(--wash);
     opacity: 0;
     transition: opacity var(--transition-slow);
   }
@@ -284,16 +271,9 @@ const entries = topics
   }
   .meta strong { font-weight: 900; }
   .count { color: var(--color-mute); font-variant-numeric: tabular-nums; }
-  .note {
-    display: block;
-    font-size: var(--size-small);
-    font-weight: 300;
-    color: var(--color-mute);
-    margin-top: 2px;
-  }
   /* A rule in the topic's own colour: the only decoration on the page. */
   .cell a { display: block; border-top: 2px solid transparent; }
-  .cell a:hover, .cell a:focus-visible { border-top-color: var(--tint); }
+  .cell a:hover, .cell a:focus-visible { border-top-color: var(--rule); }
 
   /* Five subjects in a three-column grid leaves one empty cell. Rather than
      leave a hole, the sixth slot carries the ask. */
@@ -302,11 +282,14 @@ const entries = topics
     align-items: flex-end;
     background: var(--color-ink);
     color: var(--color-paper);
+    /* On a black ground the old solid-black panel vanished. An inset rule in
+       the brand pink is what draws it back without adding a card. */
+    box-shadow: inset 0 0 0 2px var(--color-pink);
     padding: 24px;
     transition: background-color var(--transition-slow);
   }
   .prompt a:hover .prompt-frame,
-  .prompt a:focus-visible .prompt-frame { background: var(--accent); }
+  .prompt a:focus-visible .prompt-frame { background: var(--color-pink-deep); }
   .prompt-copy { display: flex; flex-direction: column; gap: 8px; }
   .prompt-copy strong {
     font-size: var(--size-big);
@@ -336,12 +319,12 @@ const entries = topics
         return;
       }
       const p = Math.min(Math.max(window.scrollY / DIST, 0), 1);
-      // Land flush with the prose column below, the way the reference measures
-      // its bio block. `vw - 60` was a 4% move at 1440px — technically the
-      // interaction, visibly nothing.
-      const intro = document.querySelector(".intro");
+      // Land flush with the content column below. `vw - 60` was a 4% move at
+      // 1440px — technically the interaction, visibly nothing. The intro prose
+      // block used to be the measuring stick; the grid is what is there now.
+      const grid = document.querySelector(".grid");
       const target = Math.min(
-        intro ? Math.round(intro.getBoundingClientRect().width) : 1000,
+        grid ? Math.round(grid.getBoundingClientRect().width) : 1000,
         vw,
       );
       const w = vw - (vw - target) * p;

@@ -643,10 +643,10 @@ Built 2026-08-27. Astro 5 + Tailwind 4, static output, 8 routes.
 ### 12.1 Routes
 
 ```
-/                      hero + intro + the five subjects        (chrome: dark)
-/work/wrestling/       gallery                                 (chrome: light)
-/work/football/
+/                      hero + the five subjects                (chrome: dark)
+/work/football/        gallery                                 (chrome: light)
 /work/flag-football/
+/work/wrestling/
 /work/dance-cheer/
 /work/graphics/
 /about/                                                        (chrome: light)
@@ -658,23 +658,39 @@ topic, and the delivered filenames carry no event metadata to group by. The refe
 flattened `/portfolio/overview/` has no equivalent — with five topics the home page is
 already the index.
 
-`chrome` is a per-route prop on the layout. `dark` means white header text over full-bleed
-media; `light` means black on white. It is a prop, not `mix-blend-mode`, exactly as the
-reference does it.
+`chrome` is a per-route prop on the layout. It began as white-on-media vs. black-on-white;
+since the ground went black sitewide (§12.12) both variants are white type, and the prop's
+only remaining job is deciding whether the corner nav renders. It is still a prop, not
+`mix-blend-mode`, exactly as the reference does it.
 
 ### 12.2 The five subjects
 
-| Topic | Slug | Accent | Grid | Frames |
-|---|---|---|---|---|
-| Wrestling | `wrestling` | `#a73b34` brick | ragged | 20 |
-| Football | `football` | `#2f518b` cobalt | ragged | 20 |
-| Flag Football | `flag-football` | `#495f39` olive | ragged | 18 |
-| Dance & Cheer | `dance-cheer` | `#b83b6c` raspberry | ragged | 12 |
-| Graphics | `graphics` | `#be6f40` ember | **uniform 4:5** | 8 |
+Order is Reyna's, given in her feedback round: football, flag football, wrestling, dance &
+cheer, graphics.
+
+| # | Topic | Slug | Accent (surface) | Tint (ink on black) | Grid | Frames |
+|---|---|---|---|---|---|---|
+| 1 | Football | `football` | `#2f518b` cobalt | `#6a8fd8` | ragged | 20 |
+| 2 | Flag Football | `flag-football` | `#495f39` olive | `#82a56b` | ragged | 18 |
+| 3 | Wrestling | `wrestling` | `#a73b34` brick | `#cf5a50` | ragged | 20 |
+| 4 | Dance & Cheer | `dance-cheer` | `#b83b6c` raspberry | `#de5f8f` | ragged | 12 |
+| 5 | Graphics | `graphics` | `#a85f34` ember | `#cf8b56` | **uniform 4:5** | 8 |
 
 Defined in `src/data/topics.ts`. The accent is not decoration — it is wayfinding. Hovering
 a topic in the overlay floods the panel with its colour, and that colour carries into the
 gallery heading, the count rule, the next-topic rule, and the page's focus rings.
+
+**Why two values per topic.** The deep hues were picked against a white page. On black they
+are ink-on-ink — cobalt is 2.7:1, olive 3.0:1, brick 3.3:1, all of which fail as heading
+colours. So each topic carries `accent` (the deep hue, used only where white type sits *on*
+it: the overlay flood, the hover wash) and `tint` (the same hue lifted past 5:1 on `#000`,
+used wherever the colour *is* the type: headings, rules, the next-topic link). Ember's deep
+value moved `#be6f40` → `#a85f34` for the same reason in reverse: white on the original was
+3.8:1, below AA for the overlay's Close control.
+
+No topic carries a description line any more. Reyna asked for them gone from the overlay,
+the home cards, and the gallery headers, so the field was removed from `Topic` rather than
+left unrendered.
 
 The reference cycles its palette round-robin and picks the artist-name colour by WCAG
 contrast at runtime. **The build does neither**, and the change is deliberate: with one
@@ -738,32 +754,40 @@ Fixed 60px transparent header, never gains a fill: `WORK` (opens the overlay) ·
 `CONTACT`. Contact is in the header at every width, satisfying the product principle that
 contact is never more than one action away.
 
-`ABOUT` bottom-left and `INSTAGRAM` bottom-right, in the fixed corner slots the reference
-uses for `SUBSCRIBE` / `SPOTLIGHT` — **but only on the dark-chrome home page**. On the light
-inner pages they were black text pinned over scrolling content, and went invisible against
-the black footer. The footer already carries both links, so nothing was lost.
+`INSTAGRAM` bottom-right, in one of the two fixed corner slots the reference uses for
+`SUBSCRIBE` / `SPOTLIGHT` — **and only on the dark-chrome home page**. On inner pages it
+would be text pinned over scrolling content. `ABOUT` held the bottom-left slot until Reyna
+asked for it removed; it is now in the hero action row and the footer, so nothing is lost.
+
+The hero's action row is `ABOUT` · `CONTACT`. It read `SEE THE WORK` · `CONTACT` until the
+same feedback round — `WORK` is already in the header at every width, so the first slot was
+spending itself on a duplicate.
 
 ### 12.6 The work overlay — the signature interaction
 
 One overlay, not the reference's three. `position: fixed`, 100vw × 100dvh,
 `translate3d(-100vw,0,0)` closed → `translate3d(0,0,0)` open over `--transition-slow`.
 
+The panel rests on **pink** (`#b83b6c`, white type at 5.4:1) rather than on the first
+topic's accent — Reyna's call. Hovering still floods it with the hovered topic's own hue, so
+the colour is still doing the wayfinding.
+
 Five names in a single column, alternating `text-align` left/right at ≥992px — the
-reference's two-column zig-zag re-read for five items instead of seventeen, with the type
-pushed to `clamp(4rem, 8.4vw, 8rem)` so five names fill the panel where 52px left it sparse.
+reference's two-column zig-zag re-read for five items instead of seventeen. The type ran to
+`clamp(4rem, 8.4vw, 8rem)` while each name carried a description under it; with the
+descriptions gone and Reyna asking for smaller type it now runs
+`clamp(2.5rem, 5vw, 4.5rem)` at ≥992px and `clamp(1.9rem, 9vw, 2.75rem)` below, and the row
+gap grew from `0.1em` to `0.34em` so the list reads as a menu rather than a wall.
 
 On hover or focus: the panel background becomes that topic's accent, the name goes from
-weight 400 to 900, its note fades in, and the topic's cover frame rises in the bottom-right
-corner. After a **150ms dwell** the route is prefetched — the reference's trick, kept.
+weight 400 to 900, and the topic's cover frame rises in the bottom-right corner. After a
+**150ms dwell** the route is prefetched — the reference's trick, kept.
 
 Departures, each forced by a real failure found in review:
 
 - Right-aligned rows reserve `clamp(170px, 17vw, 300px)` of right padding, or a long name
   ("Dance & Cheer") runs straight through the corner frame.
 - Unhovered names sit at `opacity: 0.85`, which holds above 4.5:1 on every panel colour.
-- Below 992px and on any `hover: none` pointer, the notes are **always visible** — there is
-  no hover on touch, so they would otherwise never appear, and without them five names
-  leave most of the panel empty.
 - Page chrome hides while the overlay is open (`body.is-locked`); the header's Contact link
   otherwise sat underneath the overlay's own Close control.
 - The overlay traps focus and closes on Escape. The reference does neither.
@@ -774,13 +798,15 @@ Desktop only, ≥992px:
 
 ```js
 progress = clamp(scrollY / 420, 0, 1)
-target   = width of the .intro column   // measured live, ~765px at 1440
+target   = width of the .grid column    // measured live, ~1380px at 1440
 width    = vw - (vw - target) * progress
 height   = width / vw * vh              // preserves the viewport ratio
 ```
 
-At 1440px the frame runs 1440 → 765 across the first 420px of scroll, landing flush with
-the prose column beneath it. An earlier build capped `target` at `vw - 60`, which was a 4%
+At 1440px the frame narrows across the first 420px of scroll, landing flush with the
+content column beneath it. The measuring stick used to be the `.intro` prose block; that
+block was removed with the rest of the home-page descriptions, so it is now the subject
+grid. An earlier build capped `target` at `vw - 60`, which was a 4%
 move — technically the interaction, visibly nothing. Below 992px, and under
 `prefers-reduced-motion`, it is disabled and the frame stays full-bleed.
 
@@ -822,13 +848,35 @@ Grids: first four eager, the rest lazy, `sizes="(max-width: 575px) 100vw, (max-w
 
 ### 12.11 Known gaps
 
-- **Bio copy is placeholder** and flagged as draft on the page itself. `src/data/site.ts`
-  holds the five unsupplied values: surname, email, Instagram handle, region, domain.
-  `hasPlaceholders` drives the on-page warnings, so they disappear on their own once real
-  values land.
-- No favicon, no OG image, no `robots.txt`, no sitemap.
-- `astro.config.mjs` still points `site` at a placeholder domain; set it before deploying or
-  canonical URLs will be wrong.
+- **Surname unknown.** The wordmark is the single word `REYNA`, which she has not objected
+  to, but `site.name` has no surname to fall back on for structured data.
+- **No cover was supplied for Graphics.** The other four covers are hers; graphics still
+  leads with `X002`, the build's pick.
+- **78 frames are all that exist in the repo.** The 413-image take lives at
+  `D:\Reyna-originals\website\`, outside the repo and gitignored. Every frame the repo
+  holds is on the site; widening the edit means re-running `scripts/ingest.mjs` on a machine
+  that can see the originals.
+- No favicon, no OG image.
+
+### 12.12 Revision — Reyna's feedback round
+
+Recorded 2026-08-29, after she reviewed the built site. What she asked for, and what
+shipped for each.
+
+| Asked | Shipped |
+|---|---|
+| Real contact details, bio, domain | `src/data/site.ts` now holds the real address, handle, region and domain; the placeholder machinery and the two on-page draft warnings are gone, and `astro.config.mjs` defaults `site` to `https://rjmnzphoto.com` |
+| Order: football, flag football, wrestling, dance & cheer, graphics | `order` in `src/data/topics.ts`; the overlay, footer, home grid and next-topic link all read from it |
+| "Make the entire background black, the subject colours are fine" | Black ground sitewide, white type. The subject hues are unchanged as *surfaces*; each gained a lifted `tint` for use as ink, because the deep values are illegible on black (§12.2) |
+| Keep dance and cheer as one section | Unchanged — it always was one topic |
+| Lose the description under each subject line, and the intro on the home page | `Topic.note` removed from the data model; the home page's "Five subjects, shot close" block removed with it. The section now opens on a pink rule |
+| "REYNA" pink on the front page | `--color-pink: #ff4d9d`, 6.8:1 on black |
+| Smaller text on the work overlay, pink background | §12.6 |
+| Replace "See the work" with About; remove the bottom-left About | §12.5 |
+| Replace the About page's "Subjects" list with her experience list | Ten entries in `experience` (`src/data/topics.ts`), rendered as plain text in two columns at ≥992px — a credential list, not a second navigation |
+| "Some photos are duplicated" | Diagnosed as one frame appearing twice in a visit, not two copies of a file: a perceptual-hash sweep of all 78 masters found no near-duplicate pair inside the repo. The hero was `coverFor("football")`, so the home page showed that frame in the hero *and* in the football card; about and contact reused the wrestling and dance-cheer covers the same way. All three now take frames no cover uses |
+| Change each cover photo | Her four picks were already in the take. `football-04`, `flag-football-08`, `wrestling-16` and `dance-cheer-02` were verified pixel-identical to the files she sent (mean absolute difference < 1/255, i.e. JPEG re-encode noise) and moved to position 1 in their topic, so the change is a reorder of `SELECTION` in `scripts/ingest.mjs` and of the files on disk — no new masters, no re-ingest. Graphics keeps its lead; no cover was supplied for it |
+| Show every photo she uploaded | Already true of the repo: every one of the 78 masters renders in its gallery. The 413-image take is not in the repo (§12.11), so widening the edit needs a re-ingest from the originals |
 
 ---
 
@@ -840,9 +888,10 @@ Work cannot start without:
 
 - [ ] **15–25 selected images** — her edit, not a full take. Export-ready, sRGB, long edge
       ≥ 2560px. This selection is the highest-leverage decision on the project (§12.1).
-- [ ] One cover image strong enough to carry the topic
-- [ ] One nav preview image for the overlay corner (§7) — can be the cover
-- [ ] A one- or two-line blurb, if she wants one
+- [x] One cover image strong enough to carry the topic — supplied for four of five;
+      graphics still runs the build's pick
+- [x] One nav preview image for the overlay corner (§7) — it is the cover
+- [x] A one- or two-line blurb, if she wants one — she does not; the notes were removed
 - [ ] Whether the topic breaks into individual events/projects, or reads as one body
 
 **Site-wide:**
@@ -853,15 +902,16 @@ Work cannot start without:
       100vw × 100vh, so check it still reads on a wide desktop viewport.
 - [ ] **Graphics re-exported at ≥2560px long edge**, if they are to appear at any size above
       a grid thumbnail. The supplied files are 1080px Instagram exports (§12.1).
-- [ ] Bio for `/about/`, one paragraph, third person (see §11.3 for tone)
-- [ ] Contact email, Instagram handle, where she is based
-- [ ] Any teams, schools, or programmes she has shot for — the equivalent of the reference's
-      client list
-- [ ] Topic ordering, and image ordering within each topic — she will care about this more
-      than anything else here
-- [ ] Confirmation of the per-topic accent colours (§12.1) or her own five
+- [x] Bio for `/about/`, one paragraph, third person (see §11.3 for tone)
+- [x] Contact email, Instagram handle, where she is based
+- [x] Any teams, schools, or programmes she has shot for — supplied as the ten-sport
+      experience list on `/about/`, not as a client list
+- [x] Topic ordering — supplied. Image ordering within each topic is still the build's,
+      apart from the four covers she picked
+- [x] Confirmation of the per-topic accent colours (§12.1) or her own five — confirmed
+      ("the subject colors are fine")
 - [ ] Wordmark: name as plain type, or a supplied logo file
-- [ ] Domain name
+- [x] Domain name — `rjmnzphoto.com`
 
 ---
 
@@ -873,10 +923,10 @@ Work cannot start without:
 |---|---|
 | Graphics: peer topic or its own section? | Peer topic, uniform 4:5 grid (user's choice) |
 | Do topics break into events? | No — one gallery per topic (user's choice) |
-| Where do About and Contact live? | Real pages. Contact in the header at all widths; About in a corner slot on the home page only |
-| Five names sparse in the overlay? | Solved with much larger type, `clamp(4rem, 8.4vw, 8rem)` |
+| Where do About and Contact live? | Real pages. Contact in the header at all widths; About in the hero action row and the footer |
+| Five names sparse in the overlay? | Reversed by Reyna: smaller type, `clamp(2.5rem, 5vw, 4.5rem)`, wider row gap |
 | Landing page: hero or straight to topics? | Hero, with the subjects immediately beneath |
-| Dark hero / light body, or commit to one? | Kept the split; it is a per-route `chrome` prop |
+| Dark hero / light body, or commit to one? | Committed to dark — Reyna asked for a black ground sitewide |
 | Preloader? | Dropped. ~1.6s before first paint is an agency flex, not a working photographer's |
 
 ### Still open

@@ -49,7 +49,8 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
 
 ## Capabilities and Constraints
 
-- Five topics: `wrestling`, `football`, `flag-football`, `dance-cheer`, `graphics`.
+- Five topics, in Reyna's order: `football`, `flag-football`, `wrestling`, `dance-cheer`,
+  `graphics`.
 - One gallery per topic. No per-event or per-game sub-pages — confirmed by the user. The
   supplied filenames carry no event metadata, so event grouping would be manual.
 - Static site. No CMS, no backend, no contact form, no auth, no e-commerce.
@@ -59,17 +60,21 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
   (19 distinct in wrestling alone, spanning 0.56–1.51). Any layout must not re-crop.
 - **Graphics are capped at 1080px** — Instagram exports. They cannot be displayed above
   thumbnail size and are presented in a uniform 4:5 grid, confirmed by the user.
-- **Undecided / not supplied:** Reyna's surname, contact email, Instagram handle, domain
-  name, and the region or school district she serves. The user chose to proceed with clearly
-  marked placeholders collected in one config file. **These are placeholders, not facts —
-  no future work may invent values for them.**
-- **Unconfirmed:** whether "dance-cheer" is one topic or two (the delivered folder combines
-  them; treated as one, titled "Dance & Cheer").
+- **Supplied 2026-08-29** and now live in `src/data/site.ts`: email `reynaannj@gmail.com`,
+  Instagram `@rjmnzphotos`, based in Manoa, HI and San Ramon, CA, domain `rjmnzphoto.com`
+  (she is buying it). The placeholder machinery is gone.
+- **Still not supplied:** Reyna's surname. **This is not a fact to invent —** the wordmark
+  stays the single word REYNA until she gives one.
+- **Confirmed:** "dance-cheer" is one topic. She asked for dance and cheer to stay a single
+  section.
 
 ## Brand Commitments
 
-- The name renders as **REYNA** — a single-word wordmark. Chosen because her surname was not
-  supplied; revisit if she wants her full name.
+- The name renders as **REYNA** — a single-word wordmark, set in pink (`#ff4d9d`) on the
+  home page at her request. Single-word because her surname is still not supplied; revisit
+  if she wants her full name.
+- The site sits on a **black ground throughout**, her call. The per-topic subject colours
+  she approved are unchanged.
 - The user supplied `newschoolrepresents.com/artists/erika-kamano` as a binding visual
   reference. Its measured design system is recorded in DESIGN.md §2–§10 and is the
   authority for this build.
@@ -80,9 +85,12 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
   This is a full take, not an edit — 236 wrestling frames against 8 graphics. The user
   delegated selection ("choose whatever images you think look best").
 - A complete measured teardown of the reference site in `DESIGN.md`.
-- **No bio copy, no client list, no testimonials, no press, no awards, no pricing.** None of
-  these exist yet. Future work must not fabricate them; where the design needs bio or client
-  text, it must be marked as placeholder.
+- Her own bio, supplied 2026-08-29 and used verbatim on `/about/`, plus a ten-sport
+  experience list (football, flag football, cheer, song/dance, Filam, wrestling, men's
+  volleyball, basketball, men's lacrosse, track & field). The list is wider than the five
+  galleries: she has shot sports the site holds no frames for.
+- **No client list, no testimonials, no press, no awards, no pricing.** None of these exist
+  yet. Future work must not fabricate them.
 
 ## Product Principles
 

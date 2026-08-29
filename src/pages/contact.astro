@@ -2,10 +2,12 @@
 import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Footer from "../components/Footer.astro";
-import { site, hasPlaceholders } from "../data/site";
-import { coverFor } from "../lib/images";
+import { site } from "../data/site";
+import { imagesFor } from "../lib/images";
 
-const backdrop = coverFor("dance-cheer")!;
+// Not a cover — those are all on the home page. flag-football-06 is the night
+// run-out, the one frame that reads as an invitation rather than a contest.
+const backdrop = imagesFor("flag-football")[5]!;
 const shoots = [
   ["A season", "Recurring coverage across a full schedule."],
   ["A single game or meet", "One event, edited and delivered."],
@@ -15,7 +17,7 @@ const shoots = [
 ];
 ---
 
-<Base title="Contact" chrome="light" accent="#2f518b">
+<Base title="Contact" chrome="light" accent="#2f518b" tint="#6a8fd8">
   <article class="page">
     <header class="head">
       <p class="crumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Contact</span></p>
@@ -23,40 +25,25 @@ const shoots = [
       <p class="note">
         Email is the fastest way. Tell her the sport, the date, and the venue.
       </p>
+      <p class="where">{site.region}</p>
     </header>
 
     <div class="body">
       <div class="main">
-        {
-          hasPlaceholders && (
-            <p class="draft-flag" role="note">
-              <strong>Placeholder details.</strong> The address and handle below
-              are not real. Replace them in <code>src/data/site.ts</code>.
-            </p>
-          )
-        }
-
         <a class="primary" href={`mailto:${site.email}`}>
           <span class="label small">Email</span>
           <span class="addr">{site.email}</span>
         </a>
 
-        {site.instagramUrl ? (
-          <a
-            class="primary"
-            href={site.instagramUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span class="label small">Instagram</span>
-            <span class="addr">@{site.instagram}</span>
-          </a>
-        ) : (
-          <div class="primary is-pending">
-            <span class="label small">Instagram</span>
-            <span class="addr">Not set</span>
-          </div>
-        )}
+        <a
+          class="primary"
+          href={site.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="label small">Instagram</span>
+          <span class="addr">@{site.instagram}</span>
+        </a>
 
         <h2>What she shoots</h2>
         <ul class="shoots">
@@ -96,9 +83,13 @@ const shoots = [
     color: var(--color-mute); display: flex; gap: 8px; margin-bottom: 20px;
   }
   .crumb a:hover { border-bottom: 1px solid currentColor; }
-  h1 { font-size: var(--size-hero); font-weight: 900; color: var(--accent); }
+  h1 { font-size: var(--size-hero); font-weight: 900; color: var(--tint); }
   .note {
     font-size: var(--size-big); font-weight: 300; margin-top: 0.4em; max-width: 34ch;
+  }
+  .where {
+    font-size: var(--size-smaller); text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--color-mute); margin-top: 14px;
   }
 
   .body {
@@ -108,28 +99,17 @@ const shoots = [
   }
   .main { max-width: var(--max-prose); }
 
-  .draft-flag {
-    font-size: var(--size-smaller);
-    background: #f2f2f2;
-    padding: 14px 16px;
-    box-shadow: inset 0 2px 0 0 var(--accent);
-    margin-bottom: 2em;
-  }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95em; }
-
   /* The one place on the site where an action is bigger than the photography. */
   .primary {
     display: flex;
     flex-direction: column;
     gap: 4px;
     padding: 22px 0;
-    border-top: 2px solid var(--accent);
+    border-top: 2px solid var(--tint);
     transition: transform var(--transition-base), color var(--transition-base);
   }
-  .primary:last-of-type { border-bottom: 2px solid var(--accent); }
-  .is-pending { color: var(--color-mute); cursor: default; }
-  .is-pending .addr { font-weight: 400; }
-  .primary:hover, .primary:focus-visible { transform: translateX(10px); color: var(--accent); }
+  .primary:last-of-type { border-bottom: 2px solid var(--tint); }
+  .primary:hover, .primary:focus-visible { transform: translateX(10px); color: var(--tint); }
   .small {
     font-size: var(--size-smaller); text-transform: uppercase;
     letter-spacing: 0.08em; color: var(--color-mute); font-weight: 700;
@@ -148,7 +128,7 @@ const shoots = [
   .shoots { list-style: none; margin: 0; padding: 0; }
   .shoots li {
     display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline;
-    padding: 12px 0; border-bottom: 1px solid #e4e4e4;
+    padding: 12px 0; border-bottom: 1px solid var(--color-line);
   }
   .shoots strong { font-weight: 900; }
   .shoots span { color: var(--color-mute); font-weight: 300; }

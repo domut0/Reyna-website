@@ -2,15 +2,16 @@
 import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Footer from "../components/Footer.astro";
-import { coverFor } from "../lib/images";
+import { imagesFor } from "../lib/images";
 import { site } from "../data/site";
-import { topics } from "../data/topics";
+import { experience } from "../data/topics";
 
-const portrait = coverFor("wrestling")!;
-const list = topics.slice().sort((a, b) => a.order - b.order);
+// Not a cover — the five covers are all on the home page, and reusing one here
+// showed the same frame twice in a visit. dance-cheer-08 is the moonrise stunt.
+const portrait = imagesFor("dance-cheer")[7]!;
 ---
 
-<Base title="About" chrome="light" accent="#495f39">
+<Base title="About" chrome="light" accent="#b83b6c" tint="#ff4d9d">
   <article class="page">
     <header class="head">
       <p class="crumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span></p>
@@ -19,57 +20,30 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
 
     <div class="body">
       <div class="prose">
-        <!-- PLACEHOLDER COPY. No bio was supplied. Nothing here is a claim
-             about Reyna; it is scaffolding written to the right length and
-             tone so the page can be judged, and must be replaced before
-             launch. See DESIGN.md §11.3 for the tone to match. -->
-        <p class="draft-flag" role="note">
-          <strong>Draft copy.</strong> These two paragraphs are placeholder text
-          at roughly the right length. Replace them with Reyna's own words.
-        </p>
-
         <p class="big">
-          Reyna photographs high-school sport — the part of it that happens
-          between the whistle and the scoreboard.
+          Based in both Hawaii and California, Reyna expresses her admiration for
+          sports through visual storytelling.
         </p>
         <p>
-          She works close to the mat and the sideline, in whatever light the
-          venue gives her: floodlights, a gym ceiling, the last twenty minutes
-          of sun before a Friday kickoff. The work runs to wrestling, football,
-          flag football, and dance &amp; cheer, and she designs the gameday
-          graphics that go with them.
-        </p>
-        <p>
-          Every gallery on this site is an edit, not a take. A single meet can
-          produce four hundred frames; what is here is the handful worth
-          keeping.
+          Her photography goes beyond the surface, capturing the emotion,
+          atmosphere and artistry of athletics. Her experience ranges in both
+          outdoor and indoor sports, action, portraiture, and landscape imagery.
+          She brings a distinct style to her work through unconventional angles,
+          thoughtful photo editing, and by capturing the story beyond the
+          scoreboard.
         </p>
 
-        <h2>Subjects</h2>
-        <ul class="subjects">
-          {list.map((t) => (
-            <li style={`--tint:${t.accent}`}>
-              <a href={`/work/${t.id}/`}>
-                <strong>{t.title}</strong>
-                <span>{t.note}</span>
-              </a>
-            </li>
-          ))}
+        <h2>Experience</h2>
+        <ul class="experience">
+          {experience.map((item) => <li>{item}</li>)}
         </ul>
 
         <h2>Work with her</h2>
         <p>
           Seasons, single games, meets, senior nights, and team portraits.
           The fastest way to start is an email —
-          <a class="ln" href={`mailto:${site.email}`}>{site.email}</a>
-          {site.instagramUrl ? (
-            <>
-              {" "}— or{" "}
-              <a class="ln" href={site.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>.
-            </>
-          ) : (
-            "."
-          )}
+          <a class="ln" href={`mailto:${site.email}`}>{site.email}</a> — or{" "}
+          <a class="ln" href={site.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>.
         </p>
       </div>
 
@@ -96,7 +70,7 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
     color: var(--color-mute); display: flex; gap: 8px; margin-bottom: 20px;
   }
   .crumb a:hover { border-bottom: 1px solid currentColor; }
-  h1 { font-size: var(--size-hero); font-weight: 900; color: var(--accent); }
+  h1 { font-size: var(--size-hero); font-weight: 900; color: var(--tint); }
 
   .body {
     max-width: var(--max-content);
@@ -110,43 +84,26 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
   .prose p { font-weight: 300; margin-bottom: 1.1em; }
   .big { font-size: var(--size-big); font-weight: 700 !important; line-height: var(--leading-base); }
 
-  .draft-flag {
-    font-size: var(--size-smaller);
-    background: #f2f2f2;
-    padding: 14px 16px;
-    box-shadow: inset 0 2px 0 0 var(--accent);
-    margin-bottom: 2em !important;
-  }
-
   h2 {
     font-size: var(--size-small);
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 2.4em 0 1em;
     padding-top: 14px;
-    border-top: 2px solid var(--accent);
+    border-top: 2px solid var(--tint);
   }
 
-  .subjects { list-style: none; margin: 0 0 1em; padding: 0; }
-  .subjects li + li { margin-top: 2px; }
-  .subjects a {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 14px;
-    align-items: baseline;
-    padding: 12px 0;
-    border-bottom: 1px solid #e4e4e4;
-    transition: color var(--transition-base), transform var(--transition-base);
+  /* Ten lines, not five links — this is a credential list, so it reads as one
+     column of plain text rather than a second navigation. */
+  .experience { list-style: none; margin: 0 0 1em; padding: 0; }
+  .experience li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 400;
   }
-  .subjects a:hover, .subjects a:focus-visible {
-    color: var(--tint);
-    transform: translateX(8px);
-  }
-  .subjects strong { font-weight: 900; }
-  .subjects span { color: var(--color-mute); font-weight: 300; }
 
   .ln { border-bottom: 1px solid currentColor; }
-  .ln:hover { color: var(--accent); }
+  .ln:hover { color: var(--tint); }
 
   .aside .shot { width: 100%; height: auto; }
 
@@ -159,5 +116,9 @@ const list = topics.slice().sort((a, b) => a.order - b.order);
       align-items: start;
     }
     .aside { position: sticky; top: 100px; }
+    /* Ten short items waste a full-width column; two columns keep the list
+       inside one screen next to the bio. */
+    .experience { columns: 2; column-gap: 40px; }
+    .experience li { break-inside: avoid; }
   }
 </style>

@@ -16,23 +16,20 @@ const { chrome } = Astro.props;
 </header>
 
 {
-  /* Corner links ride over the full-bleed hero only. On the light inner pages
-     they would be black text pinned over scrolling content — and invisible
-     once the black footer scrolls under them. The footer already carries
-     About and Instagram, so there is nothing to replace. */
+  /* One corner link, bottom right, over the full-bleed hero only. About used to
+     sit bottom left and was removed at Reyna's request — it is in the hero
+     action row and the footer, so nothing is lost. On inner pages these would
+     be pinned over scrolling content, so they stay on the hero. */
   chrome === "dark" && (
     <nav class="corner" aria-label="Secondary">
-      <a class="label hit corner-left" href="/about/">About</a>
-      {site.instagramUrl && (
-        <a
-          class="label hit corner-right"
-          href={site.instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Instagram<span class="sr-only"> (opens in a new tab)</span>
-        </a>
-      )}
+      <a
+        class="label hit corner-right"
+        href={site.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Instagram<span class="sr-only"> (opens in a new tab)</span>
+      </a>
     </nav>
   )
 }
@@ -54,8 +51,10 @@ const { chrome } = Astro.props;
   }
   .site-header > * { pointer-events: auto; }
 
-  .site-header[data-chrome="dark"] { color: var(--color-paper); }
-  .site-header[data-chrome="light"] { color: var(--color-ink); }
+  /* Both variants are white now that every page sits on black. The attribute
+     is kept because the corner nav still keys off it. */
+  .site-header[data-chrome="dark"],
+  .site-header[data-chrome="light"] { color: var(--color-paper); }
 
   .wordmark {
     font-weight: 900;
@@ -76,22 +75,19 @@ const { chrome } = Astro.props;
   .hit:hover,
   .wordmark:hover { transform: scale(1.06); }
 
-  /* Only rendered on dark-chrome pages, so white is unconditional. */
   .corner { color: var(--color-paper); }
-  .corner-left,
   .corner-right {
     position: fixed;
+    right: 0;
     bottom: 0;
     padding: 15px 11px;
     z-index: 10100;
     min-height: 44px;
   }
-  .corner-left { left: 0; }
-  .corner-right { right: 0; }
 
   @media (min-width: 650px) {
     .site-header { padding: 15px 20px; }
-    .corner-left, .corner-right { padding: 15px 20px; }
+    .corner-right { padding: 15px 20px; }
   }
 </style>
 
