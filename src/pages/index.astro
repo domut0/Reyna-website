@@ -276,7 +276,12 @@ const entries = topics
 
   /* Five subjects in a three-column grid leaves one empty cell. Rather than
      leave a hole, the sixth slot carries the ask. */
+  /* The photo cards are 4:5 because a photograph needs a shape. This one holds
+     two lines of text, and inheriting that ratio made it a 460px-tall mostly
+     empty box on a phone. It sizes to its content instead, and only stretches
+     to match its neighbours once there is a row to match. */
   .prompt-frame {
+    aspect-ratio: auto;
     display: flex;
     align-items: flex-end;
     background: var(--color-ink);
@@ -290,6 +295,9 @@ const entries = topics
   .prompt a:hover .prompt-frame,
   .prompt a:focus-visible .prompt-frame { background: var(--color-pink-deep); }
   .prompt-copy { display: flex; flex-direction: column; gap: 8px; }
+  @media (min-width: 992px) {
+    .prompt a, .prompt-frame { height: 100%; }
+  }
   .prompt-copy strong {
     font-size: var(--size-big);
     font-weight: 900;

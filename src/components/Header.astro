@@ -37,19 +37,25 @@ const { chrome } = Astro.props;
 <style>
   /* Fixed, transparent, never gains a fill. Colour flips per page rather than
      using mix-blend-mode, so it stays predictable over any photograph. */
+  /* Three columns, not `justify-content: space-between`. Space-between only
+     centres the middle child when the outer two are the same width, and
+     CONTACT is wider than WORK — it put the wordmark 11.9px left of centre at
+     every viewport. Equal `1fr` gutters pin it to the true centre instead. */
   .site-header {
     position: fixed;
     inset: 0 0 auto 0;
     height: var(--header-h);
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
     padding: 15px 11px;
     z-index: 10100;
     background: transparent;
     pointer-events: none;
   }
   .site-header > * { pointer-events: auto; }
+  .site-header > :first-child { justify-self: start; }
+  .site-header > :last-child { justify-self: end; }
 
   /* Both variants are white now that every page sits on black. The attribute
      is kept because the corner nav still keys off it. */

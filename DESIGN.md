@@ -754,6 +754,12 @@ Fixed 60px transparent header, never gains a fill: `WORK` (opens the overlay) ·
 `CONTACT`. Contact is in the header at every width, satisfying the product principle that
 contact is never more than one action away.
 
+It is a **three-column grid (`1fr auto 1fr`)**, not `justify-content: space-between`.
+Space-between only centres a middle child when the outer two are equal widths, and
+`CONTACT` is wider than `WORK`, so the wordmark sat 11.9px left of centre at every
+viewport — measured, not estimated. Equal `1fr` gutters pin it to the true centre and the
+side items are pushed out with `justify-self`.
+
 `INSTAGRAM` bottom-right, in one of the two fixed corner slots the reference uses for
 `SUBSCRIBE` / `SPOTLIGHT` — **and only on the dark-chrome home page**. On inner pages it
 would be text pinned over scrolling content. `ABOUT` held the bottom-left slot until Reyna
@@ -911,6 +917,18 @@ not rhetoric.
 `/contact/` moved from cobalt to pink, matching the wordmark and the work panel.
 **Reyna's bio was not touched** — those are her own words, and this pass had no
 business in them.
+
+Two defects she caught on a phone afterwards, both measured before and after:
+
+- **The header wordmark was 11.9px left of centre** at every viewport. Cause and fix
+  in §12.5. The hero wordmark was already exact (0.0px), so the header was the one
+  she was seeing.
+- **The home page's sixth cell was a 460px-tall empty box on a phone.** It inherits
+  `.frame`, which is `aspect-ratio: 4/5` because a photograph needs a shape — but this
+  cell holds two lines of text, and removing the middle line in the copy pass left the
+  ratio holding open a void. It now sizes to its content (110px on a phone) and only
+  stretches to `height: 100%` at ≥992px, where there is a row of photo cards beside it
+  to match.
 
 ---
 
