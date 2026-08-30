@@ -843,14 +843,29 @@ Fixed here rather than inherited:
 
 ### 12.10 Images
 
-78 frames selected by eye from the 413 unique originals, via numbered contact sheets.
-`scripts/ingest.mjs` maps the chosen sheet IDs to source paths and writes 2400px long-edge
-mozjpeg masters into `src/assets/work/<topic>/`; Astro emits 340 responsive AVIF/WebP
-variants at build. Repo cost is 31 MB of masters against 4.1 GB of originals, which stay at
-`D:\Reyna-originals` and are gitignored.
+**All 413 unique frames ship.** Reyna asked for the whole take on the site, so nothing is
+withheld: 235 wrestling, 85 flag football, 57 football, 28 dance & cheer, 8 graphics.
+
+Order is still hers. `SELECTION` in `scripts/ingest.mjs` is the running order — her four
+covers (F036, G013, W096, D021) lead their topics, then the rest of the hand-picked frames,
+then everything else in sheet order. A gallery opens on the frame she chose even though it
+holds the whole take. Shortening those lists is how to re-cut to a true edit later, and
+`scripts/source-index.tsv` maps every sheet ID to its original file so a re-ingest never
+depends on a scratch directory.
+
+Covers are written at 2400px long edge, the rest at 2000px — a 3-column grid never displays
+above ~1000 device px, so 2000 is generous and the saving across 413 files is most of a
+hundred megabytes. Repo cost: **120 MB** of masters against 4.1 GB of originals. Astro emits
+**2053** responsive AVIF/WebP variants; `dist` is **252 MB**.
 
 Hero: `object-position: center 30%`, `loading="eager"`, `fetchpriority="high"`.
-Grids: first four eager, the rest lazy, `sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"`.
+Grids: first four eager, the rest lazy, `sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"`,
+`widths={[400, 800, 1200]}` — 1600 was dropped because a 3-column grid never asks for it.
+
+**Consequence worth knowing:** the wrestling gallery is ~50,000px tall on desktop and
+~120,000px on a phone, roughly 142 phone screens. That is what showing everything means. A
+fixed *Top* control appears on gallery pages after 1.5 viewports of scroll, because a page
+that long needs a way back that is not 142 flicks.
 
 ### 12.11 Known gaps
 
@@ -858,10 +873,8 @@ Grids: first four eager, the rest lazy, `sizes="(max-width: 575px) 100vw, (max-w
   to, but `site.name` has no surname to fall back on for structured data.
 - **No cover was supplied for Graphics.** The other four covers are hers; graphics still
   leads with `X002`, the build's pick.
-- **78 frames are all that exist in the repo.** The 413-image take lives at
-  `D:\Reyna-originals\website\`, outside the repo and gitignored. Every frame the repo
-  holds is on the site; widening the edit means re-running `scripts/ingest.mjs` on a machine
-  that can see the originals.
+- ~~78 frames are all that exist in the repo.~~ **Closed.** All 413 were re-ingested and
+  ship; the originals still live at `D:\Reyna-originals\website\`, gitignored.
 - No favicon, no OG image.
 
 ### 12.12 Revision — Reyna's feedback round
@@ -882,7 +895,7 @@ shipped for each.
 | Replace the About page's "Subjects" list with her experience list | Ten entries in `experience` (`src/data/topics.ts`), rendered as plain text in two columns at ≥992px — a credential list, not a second navigation |
 | "Some photos are duplicated" | Diagnosed as one frame appearing twice in a visit, not two copies of a file: a perceptual-hash sweep of all 78 masters found no near-duplicate pair inside the repo. The hero was `coverFor("football")`, so the home page showed that frame in the hero *and* in the football card; about and contact reused the wrestling and dance-cheer covers the same way. All three now take frames no cover uses |
 | Change each cover photo | Her four picks were already in the take. `football-04`, `flag-football-08`, `wrestling-16` and `dance-cheer-02` were verified pixel-identical to the files she sent (mean absolute difference < 1/255, i.e. JPEG re-encode noise) and moved to position 1 in their topic, so the change is a reorder of `SELECTION` in `scripts/ingest.mjs` and of the files on disk — no new masters, no re-ingest. Graphics keeps its lead; no cover was supplied for it |
-| Show every photo she uploaded | Already true of the repo: every one of the 78 masters renders in its gallery. The 413-image take is not in the repo (§12.11), so widening the edit needs a re-ingest from the originals |
+| Show every photo she uploaded | **Now actually done.** This was first read as already satisfied, on the grounds that all 78 masters in the repo were rendering — but she meant all 413 she uploaded, not all the ones that happened to have been ingested. Re-ingested from the originals; every frame ships, her covers and order preserved as the lead |
 
 ### 12.13 Revision — the copy pass
 

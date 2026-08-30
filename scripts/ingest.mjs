@@ -19,10 +19,11 @@ import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const INDEX =
-  "C:/Users/ccblu/AppData/Local/Temp/claude/C--Users-ccblu-OneDrive-Documents-GitHub/a249ff3c-fc6b-46a7-a486-ebc9d830a04e/scratchpad/cs/index.txt";
+// In the repo, so a re-ingest never depends on a session scratch directory.
+const INDEX = join(__dirname, "source-index.tsv");
 const OUT = join(ROOT, "src", "assets", "work");
-const LONG_EDGE = 2400;
+const COVER_EDGE = 2400;
+const LONG_EDGE = 2000;
 const DRY = process.argv.includes("--dry");
 
 /** Display order per topic, in the topic order the site uses. First = cover.
@@ -69,34 +70,57 @@ const lookup = new Map(
     }),
 );
 
+/** Sheet-label prefix per topic, matching how source-index.tsv was written. */
+const PREFIX = {
+  football: "F",
+  "flag-football": "G",
+  wrestling: "W",
+  "dance-cheer": "D",
+  graphics: "X",
+};
+
+/** Reyna's running order first, then every remaining frame for that topic in
+ *  sheet order. Nothing is dropped — the whole take ships, but her covers and
+ *  her sequence still decide what a visitor meets first. */
+const orderFor = (topic) => {
+  const lead = SELECTION[topic] ?? [];
+  const seen = new Set(lead);
+  const rest = [...lookup.keys()].filter(
+    (id) => id.startsWith(PREFIX[topic]) && !seen.has(id),
+  );
+  return [...lead, ...rest];
+};
+
 let written = 0;
 const missing = [];
-const manifest = {};
 
-for (const [topic, ids] of Object.entries(SELECTION)) {
+for (const topic of Object.keys(PREFIX)) {
+  const ids = orderFor(topic);
   const dir = join(OUT, topic);
   if (!DRY) {
     if (existsSync(dir)) rmSync(dir, { recursive: true, force: true });
     mkdirSync(dir, { recursive: true });
   }
-  manifest[topic] = [];
 
+  let n = 0;
   for (const [i, id] of ids.entries()) {
     const src = lookup.get(id);
     if (!src) {
       missing.push(id);
       continue;
     }
-    const name = `${topic}-${String(i + 1).padStart(2, "0")}.jpg`;
-    manifest[topic].push({ id, name });
+    // Zero-padded to 3 so filename sort still equals display order past 99.
+    const name = `${topic}-${String(i + 1).padStart(3, "0")}.jpg`;
+    n++;
     if (DRY) continue;
 
+    const edge = i === 0 ? COVER_EDGE : LONG_EDGE;
     const img = sharp(src, { failOn: "none" }).rotate(); // honour EXIF orientation
     const { width = 0, height = 0 } = await img.metadata();
     const resize =
       width >= height
-        ? { width: Math.min(width, LONG_EDGE) }
-        : { height: Math.min(height, LONG_EDGE) };
+        ? { width: Math.min(width, edge) }
+        : { height: Math.min(height, edge) };
 
     await img
       .resize({ ...resize, withoutEnlargement: true })
@@ -104,7 +128,9 @@ for (const [topic, ids] of Object.entries(SELECTION)) {
       .toFile(join(dir, name));
     written++;
   }
-  console.log(`${topic}: ${manifest[topic].length} selected`);
+  console.log(
+    `${topic.padEnd(14)} ${String(n).padStart(3)} frames  (${(SELECTION[topic] ?? []).length} lead the order)`,
+  );
 }
 
 if (missing.length) {

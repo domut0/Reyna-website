@@ -47,7 +47,7 @@ const uniform = topic.grid === "uniform";
           <Image
             src={shot.src}
             alt={`${topic.title} — frame ${i + 1} of ${shots.length}`}
-            widths={[400, 800, 1200, 1600]}
+            widths={[400, 800, 1200]}
             sizes="(max-width: 575px) 100vw, (max-width: 991px) 50vw, 33vw"
             loading={i < 4 ? "eager" : "lazy"}
             class="img"
@@ -63,6 +63,11 @@ const uniform = topic.grid === "uniform";
       <span class="big">{next.title}</span>
     </a>
   </nav>
+
+  <button class="totop label" type="button" hidden>
+    <span class="arrow" aria-hidden="true"></span>
+    Top
+  </button>
 
   <Footer />
 </Base>
@@ -174,3 +179,67 @@ const uniform = topic.grid === "uniform";
   }
   @media (min-width: 992px) { .onward { padding-inline: var(--gutter-lg); } }
 </style>
+
+<style>
+  /* Wrestling now runs 235 frames — ~50,000px on desktop and ~120,000px on a
+     phone, roughly 142 phone screens. Showing the whole take is the ask; a
+     page that long still needs a way back that is not 142 flicks. */
+  .totop {
+    position: fixed;
+    right: 11px;
+    bottom: 11px;
+    z-index: 10050;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 16px;
+    background: var(--tint);
+    color: #000;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity var(--transition-base),
+      transform var(--transition-base);
+  }
+  .totop[hidden] { display: none; }
+  .totop.is-shown { opacity: 1; transform: none; }
+  .totop:hover, .totop:focus-visible { opacity: 0.82; }
+  /* Same CSS-only chevron as the hero cue, pointed the other way. */
+  .arrow {
+    width: 9px;
+    height: 9px;
+    border: solid currentColor;
+    border-width: 2px 2px 0 0;
+    transform: rotate(-45deg);
+    position: relative;
+    top: 2px;
+  }
+  @media (min-width: 650px) { .totop { right: 20px; bottom: 20px; } }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>(".totop");
+  if (btn) {
+    btn.hidden = false;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      btn.classList.toggle("is-shown", window.scrollY > window.innerHeight * 1.5);
+    };
+    update();
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+    btn.addEventListener("click", () => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    });
+  }
+</script>

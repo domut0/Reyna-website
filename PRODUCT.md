@@ -55,7 +55,8 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
   supplied filenames carry no event metadata, so event grouping would be manual.
 - Static site. No CMS, no backend, no contact form, no auth, no e-commerce.
 - **Source images:** 416 files, 4.1 GB, at `D:\Reyna-originals\website\` — outside the repo
-  and gitignored. 413 unique. Measured characteristics in DESIGN.md §12.1.
+  and gitignored. 413 unique, and **all 413 ship**: Reyna asked for the whole take on the
+  site rather than a selection. Measured characteristics in DESIGN.md §12.1.
 - ~78% of her photography is **portrait** orientation, with scattered aspect ratios
   (19 distinct in wrestling alone, spanning 0.56–1.51). Any layout must not re-crop.
 - **Graphics are capped at 1080px** — Instagram exports. They cannot be displayed above
@@ -87,8 +88,14 @@ between seasons, not a feed. Most first visits are on a phone, from Instagram.
 ## Evidence on Hand
 
 - 413 unique photographs across five topics, full-resolution, at `D:\Reyna-originals\`.
-  This is a full take, not an edit — 236 wrestling frames against 8 graphics. The user
-  delegated selection ("choose whatever images you think look best").
+  This is a full take, not an edit — 235 wrestling frames against 8 graphics.
+- **Selection history, because it reversed.** The user first delegated the edit ("choose
+  whatever images you think look best") and 78 were picked by eye from contact sheets of
+  all 413. Reyna then asked for every photo she uploaded to appear, so all 413 now ship.
+  The 78 survive as the `SELECTION` running order in `scripts/ingest.mjs`, with her four
+  chosen covers at their head — the editorial judgement still decides what a visitor meets
+  first even though nothing is withheld. Re-cutting to an edit means shortening those
+  lists, not re-picking.
 - A complete measured teardown of the reference site in `DESIGN.md`.
 - Her own bio, supplied 2026-08-29 and used verbatim on `/about/`, plus a ten-sport
   experience list (football, flag football, cheer, song/dance, Filam, wrestling, men's
